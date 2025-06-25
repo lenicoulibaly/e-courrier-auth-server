@@ -1,4 +1,4 @@
-package lenicorp.types.controller.exceptions;
+package lenicorp.exceptions;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.core.Response;

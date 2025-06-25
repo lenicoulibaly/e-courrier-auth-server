@@ -110,4 +110,16 @@ public class TypeRepo implements PanacheRepositoryBase<Type, String>
     {
         return this.list("upper(typeGroup.groupCode) = ?1", StringUtils.stripAccentsToUpperCase(groupCode));
     }
+
+
+    public List<String> getParentTypeCodes(String typeCode)
+    {
+        if (StringUtils.isBlank(typeCode)) return List.of();
+
+        String query = "select tm.parent.code from TypeMapping tm where upper(tm.child.code) = :typeCode";
+        return getEntityManager()
+                .createQuery(query, String.class)
+                .setParameter("typeCode", StringUtils.stripAccentsToUpperCase(typeCode))
+                .getResultList();
+    }
 }

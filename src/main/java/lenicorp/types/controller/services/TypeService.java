@@ -4,7 +4,7 @@ package lenicorp.types.controller.services;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import lenicorp.types.controller.exceptions.AppException;
+import lenicorp.exceptions.AppException;
 import lenicorp.types.controller.repositories.TypeGroupRepo;
 import lenicorp.types.controller.repositories.TypeMappingRepo;
 import lenicorp.types.controller.repositories.TypeRepo;

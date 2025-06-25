@@ -1,4 +1,4 @@
-package lenicorp.types.controller.exceptions;
+package lenicorp.exceptions;
 
 import lombok.Getter;
 import lombok.Setter;
