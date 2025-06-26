@@ -2,7 +2,12 @@ package lenicorp.structures.model.dtos;
 
 import jakarta.validation.constraints.NotNull;
 import lenicorp.structures.model.validators.CompatibleTypeAndStrParent;
+import lenicorp.structures.model.validators.ExistingStrId;
+import lenicorp.structures.model.validators.UniqueSigleUnderSameParent;
+import lenicorp.structures.model.validators.UniqueStrNameUnderSameParent;
+import lenicorp.types.model.validators.CreateGroup;
 import lenicorp.types.model.validators.ExistingTypeCode;
+import lenicorp.types.model.validators.UpdateGroup;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,23 +18,29 @@ import java.util.Objects;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @CompatibleTypeAndStrParent
+@UniqueSigleUnderSameParent(groups = {CreateGroup.class, UpdateGroup.class})
+@UniqueStrNameUnderSameParent(groups = {CreateGroup.class, UpdateGroup.class})
+@NotNull(message = "Aucune donnée parvenue")
 public class ChangeAnchorDTO
 {
     @NotNull(message = "L'ID de la structure ne peut être nul")
     private Long strId;
     @ExistingTypeCode @NotNull(message = "L'ID du type ne peut être nul")
-    private String newTypeCode;
-    @NotNull(message = "L'ID de la structure de tutelle ne peut être nul")
-    private Long newParentId;
+    private String typeCode;
+    @ExistingStrId(allowNull = true)
+    private Long parentId;
 
     @Length(message = "Le nom de la structure doit contenir au moins 3 caractères", min = 3)
     @NotNull(message = "Le nom de la structure ne peut être nul")
-    private String newStrName;
+    private String strName;
 
     @NotNull(message = "Le sigle de la structure ne peut être nul")
-    private String newStrSigle;
+    private String strSigle;
 
-    private long strLevel;
+    private String strTel;
+    private String strAddress;
+    @NotNull(message = "La situation géographique ne peut être nulle")
+    private String situationGeo;
 
     @Override
     public boolean equals(Object o)
@@ -37,12 +48,12 @@ public class ChangeAnchorDTO
         if (this == o) return true;
         if (!(o instanceof ChangeAnchorDTO)) return false;
         ChangeAnchorDTO that = (ChangeAnchorDTO) o;
-        return Objects.equals(strId, that.strId) && Objects.equals(newTypeCode, that.newTypeCode) && Objects.equals(newParentId, that.newParentId)
-                && Objects.equals(newStrName, that.newStrName) && Objects.equals(newStrSigle, that.newStrSigle);
+        return Objects.equals(strId, that.strId) && Objects.equals(typeCode, that.typeCode) && Objects.equals(parentId, that.parentId)
+                && Objects.equals(strName, that.strName) && Objects.equals(strSigle, that.strSigle);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(strId, newTypeCode, newParentId, newStrName, newStrSigle);
+        return Objects.hash(strId, typeCode, parentId, strName, strSigle);
     }
 }

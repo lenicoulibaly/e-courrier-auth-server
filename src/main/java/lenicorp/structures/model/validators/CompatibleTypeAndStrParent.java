@@ -29,8 +29,8 @@ public @interface CompatibleTypeAndStrParent
         @Override
         public boolean isValid(ChangeAnchorDTO dto, ConstraintValidatorContext context)
         {
-            if(dto.getNewParentId()==null) return true;
-            return strRepo.parentHasCompatibleSousType(dto.getNewParentId(), dto.getNewTypeCode());
+            if(dto.getParentId()==null) return true;
+            return strRepo.parentHasCompatibleSousType(dto.getParentId(), dto.getTypeCode());
         }
     }
 

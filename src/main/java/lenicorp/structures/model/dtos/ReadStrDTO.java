@@ -29,6 +29,23 @@ public class ReadStrDTO
 
     private String chaineSigles;
 
+    public ReadStrDTO(Long strId, String strName, String strTypeName, String strSigle, String strTypeCode, String strTel, String strAddress, String situationGeo, Long parentId, String parentName, String parentSigle, Long strLevel, String chaineSigles)
+    {
+        this.strId = strId;
+        this.strName = strName;
+        this.strTypeName = strTypeName;
+        this.strSigle = strSigle;
+        this.strTypeCode = strTypeCode;
+        this.strTel = strTel;
+        this.strAddress = strAddress;
+        this.situationGeo = situationGeo;
+        this.parentId = parentId;
+        this.parentName = parentName;
+        this.parentSigle = parentSigle;
+        this.strLevel = strLevel;
+        this.chaineSigles = chaineSigles;
+    }
+
     public ReadStrDTO(Long strId, String strName, String strSigle, String hierarchySigles)
     {
         this.strId = strId;

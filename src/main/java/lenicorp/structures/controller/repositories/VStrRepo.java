@@ -10,55 +10,27 @@ import lenicorp.utilities.Page;
 import lenicorp.utilities.PageRequest;
 import lenicorp.utilities.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 @ApplicationScoped
 public class VStrRepo implements PanacheRepository<VStructure>
 {
     @Inject private StrMapper strMapper;
-    /**
-     * Trouve toutes les structures d'un type donné
-     */
-    public List<VStructure> findByTypeCode(String typeCode) {
-        return find("strTypeCode", typeCode).list();
-    }
-
-
-    /**
-     * Trouve toutes les structures racines (ministères)
-     */
-    public List<VStructure> findRootStructures() {
-        return find("profondeur", 0).list();
-    }
-
-    /**
-     * Trouve toutes les directions générales
-     */
-    public List<VStructure> findDirectionsGenerales() {
-        return findByTypeCode("DG");
-    }
-
-    /**
-     * Trouve les structures contenant une chaîne dans leur hiérarchie
-     */
-    public List<VStructure> findByChainContaining(String partialChain) {
-        return find("chaineSigles like ?1", "%" + partialChain + "%").list();
-    }
-
-    /**
-     * Trouve les enfants directs d'une structure donnée
-     */
-    public List<VStructure> findDirectChildren(String parentSigle) {
-        return find("chaineSigles like ?1 and profondeur = (select s.profondeur from VStructure s where s.strSigle = ?2) + 1", 
-                   parentSigle + "/%", parentSigle).list();
-    }
 
     /**
      * Trouve tous les descendants d'une structure donnée
      */
-    public List<VStructure> findAllDescendants(String ancestorSigle)
+    public List<ReadStrDTO> findAllDescendants(Long strId)
     {
-        return find("chaineSigles like ?1", ancestorSigle + "/%").list();
+        String parentChaineSigles = find("strId", strId).firstResult().getChaineSigles();
+
+        if (parentChaineSigles == null)  return Collections.emptyList();
+
+        // Deuxième requête pour trouver tous les descendants
+        List<VStructure> descendants = find("chaineSigles like ?1 and strId != ?2 order by chaineSigles", parentChaineSigles + "/%", strId).list();
+
+        return strMapper.mapToReadStrDTOList(descendants);
     }
 
 

@@ -1,46 +1,20 @@
 package lenicorp.structures.controller.repositories;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.validation.constraints.NotNull;
-import lenicorp.structures.model.entities.Structure;
+import lenicorp.structures.model.dtos.ChangeAnchorDTO;
+import lenicorp.structures.model.dtos.CreateOrUpdateStrDTO;
+import lenicorp.structures.model.dtos.ReadStrDTO;
 import lenicorp.utilities.StringUtils;
-import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
 
 @ApplicationScoped
-public class StrRepo implements PanacheRepository<Structure>
+public class StrRepo implements IStrRepo
 {
-    List<Structure> findByStrParent(Long strId)
-    {
-        return find("strParent.strId = ?1", strId).list();
-    }
-
-    Structure getStrParent(long strId)
-    {
-        return find("strId = ?1", strId).firstResult().getStrParent();
-    }
-
-    List<Structure> findByStrLevel(long strLevel)
-    {
-        return find("strLevel = ?1", strLevel).list();
-    }
-
-    List<Structure> findByTypeCodeIn(List<String> typeCodes)
-    {
-        if (typeCodes == null || typeCodes.isEmpty()) return List.of();
-        String query = "select s from Structure s join s.strType t where t.code in (:typeCodes)";
-        return getEntityManager()
-                .createQuery(query, Structure.class)
-                .setParameter("typeCodes", typeCodes)
-                .getResultList();
-    }
-
-
     public boolean parentHasCompatibleSousType(Long strParentId, String childTypeCode)
     {
-        if (strParentId == null || StringUtils.isBlank(childTypeCode)) {
+        if (strParentId == null || StringUtils.isBlank(childTypeCode))
+        {
             return false;
         }
 
@@ -70,16 +44,15 @@ public class StrRepo implements PanacheRepository<Structure>
         if (parentId != null)
         {
             requete += " and s.strParent.strId = :parentId";
-        }
-        else
+        } else
         {
             requete += " and s.strParent is null";
         }
-        if(excludeStrId != null) requete += " and s.strId <> :excludeStrId";
+        if (excludeStrId != null) requete += " and s.strId <> :excludeStrId";
 
         var query = getEntityManager().createQuery(requete, Long.class).setParameter("sigle", sigle);
-        if(parentId != null) query = query.setParameter("parentId", parentId);
-        if(excludeStrId != null) query = query.setParameter("excludeStrId", excludeStrId);
+        if (parentId != null) query = query.setParameter("parentId", parentId);
+        if (excludeStrId != null) query = query.setParameter("excludeStrId", excludeStrId);
         var count = query.getSingleResult();
         return count > 0;
     }
@@ -97,17 +70,94 @@ public class StrRepo implements PanacheRepository<Structure>
         if (parentId != null)
         {
             requete += " and s.strParent.strId = :parentId";
-        }
-        else
+        } else
         {
             requete += " and s.strParent is null";
         }
-        if(excludeStrId != null) requete += " and s.strId <> :excludeStrId";
+        if (excludeStrId != null) requete += " and s.strId <> :excludeStrId";
 
         var query = getEntityManager().createQuery(requete, Long.class).setParameter("strName", strName);
-        if(parentId != null) query = query.setParameter("parentId", parentId);
-        if(excludeStrId != null) query = query.setParameter("excludeStrId", excludeStrId);
+        if (parentId != null) query = query.setParameter("parentId", parentId);
+        if (excludeStrId != null) query = query.setParameter("excludeStrId", excludeStrId);
         var count = query.getSingleResult();
         return count > 0;
     }
+
+    public List<ReadStrDTO> getPossibleParentStructures(String childTypeCode)
+    {
+        String query;
+        if (childTypeCode == null)
+        {
+            return List.of();
+        }
+
+        query = """
+                    SELECT new lenicorp.structures.model.dtos.ReadStrDTO(
+                            s.strId, s.strName, s.strTypeName, s.strSigle, s.strTypeCode,
+                            s.strTel, s.strAddress, situationGeo, s.parentId, s.parentName,
+                            s.parentSigle, s.strLevel, s.chaineSigles)
+                    FROM VStructure s
+                    WHERE s.strTypeCode IN (
+                        SELECT tm.parent.code
+                        FROM TypeMapping tm
+                        WHERE tm.child.code = :childTypeCode
+                    )
+                """;
+
+        return getEntityManager()
+                .createQuery(query, ReadStrDTO.class)
+                .setParameter("childTypeCode", childTypeCode)
+                .getResultList();
+    }
+
+    public List<ReadStrDTO> getRootStructures()
+    {
+        String query;
+        query = """
+                    SELECT new lenicorp.structures.model.dtos.ReadStrDTO(
+                        s.strId, s.strName, s.strTypeName, s.strSigle, s.strTypeCode,
+                        s.strTel, s.strAddress, situationGeo, s.parentId, s.parentName,
+                        s.parentSigle, s.strLevel, s.chaineSigles)
+                    FROM VStructure s
+                    WHERE s.parentId IS NULL
+                """;
+        return getEntityManager()
+                .createQuery(query, ReadStrDTO.class)
+                .getResultList();
+    }
+
+    @Override
+    public CreateOrUpdateStrDTO getUpdateDto(Long strId)
+    {
+        String query = """
+                SELECT new lenicorp.structures.model.dtos.CreateOrUpdateStrDTO(
+                    s.strId, s.strName, s.strSigle, s.strType.code, s.strParent.strId,
+                    s.strTel, s.strAddress, s.situationGeo)
+                FROM Structure s
+                WHERE s.strId = :strId
+                """;
+
+        return getEntityManager()
+                .createQuery(query, CreateOrUpdateStrDTO.class)
+                .setParameter("strId", strId)
+                .getSingleResult();
+    }
+
+    @Override
+    public ChangeAnchorDTO getChangeAnchorDto(Long strId)
+    {
+        String query = """
+                SELECT new lenicorp.structures.model.dtos.ChangeAnchorDTO(
+                    s.strId, s.strType.code, s.strParent.strId, s.strName, s.strSigle,
+                    s.strTel, s.strAddress, s.situationGeo)
+                FROM Structure s
+                WHERE s.strId = :strId
+                """;
+
+        return getEntityManager()
+                .createQuery(query, ChangeAnchorDTO.class)
+                .setParameter("strId", strId)
+                .getSingleResult();
+    }
+
 }

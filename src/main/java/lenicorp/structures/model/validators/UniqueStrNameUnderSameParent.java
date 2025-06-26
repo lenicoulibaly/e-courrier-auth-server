@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 import lenicorp.structures.controller.repositories.StrRepo;
+import lenicorp.structures.model.dtos.ChangeAnchorDTO;
 import lenicorp.structures.model.dtos.CreateOrUpdateStrDTO;
 import lenicorp.utilities.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +16,16 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {
-    UniqueStrNameUnderSameParent.UniqueStrNameUnderSameParentValidator.class
+        UniqueStrNameUnderSameParent.UniqueStrNameUnderSameParentValidator.class,
+        UniqueStrNameUnderSameParent.UniqueStrNameUnderSameParentForChangeAnchorValidator.class
 })
 @Documented
 public @interface UniqueStrNameUnderSameParent
 {
     String message() default "Ce nom ('{validatedValue.strName}') existe déjà sous le même parent";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 
     @ApplicationScoped
@@ -44,6 +48,27 @@ public @interface UniqueStrNameUnderSameParent
                     dto.getStrName(),
                     dto.getParentId(),
                     excludeStrId
+            );
+        }
+    }
+
+    @ApplicationScoped
+    @RequiredArgsConstructor
+    class UniqueStrNameUnderSameParentForChangeAnchorValidator implements ConstraintValidator<UniqueStrNameUnderSameParent, ChangeAnchorDTO>
+    {
+        private final StrRepo strRepo;
+
+        @Override
+        public boolean isValid(ChangeAnchorDTO dto, ConstraintValidatorContext context)
+        {
+            if (dto == null || StringUtils.isBlank(dto.getStrName()))
+            {
+                return true;
+            }
+            return !strRepo.strNameExistsUnderSameParent(
+                    dto.getStrName(),
+                    dto.getParentId(),
+                    dto.getStrId()
             );
         }
     }

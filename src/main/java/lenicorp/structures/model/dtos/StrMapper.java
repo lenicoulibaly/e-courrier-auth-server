@@ -13,7 +13,6 @@ import java.util.List;
 @Mapper(componentModel = "cdi")
 public interface StrMapper
 {
-
     @Mapping(target = "strTypeName", source = "strType.name")
     @Mapping(target = "strTypeCode", source = "strType.code")
     @Mapping(target = "respoId", ignore = true)
@@ -33,12 +32,10 @@ public interface StrMapper
      */
     List<ReadStrDTO> mapToReadStrDTOList(List<VStructure> vStructures);
 
-
     /**
      * Mapping de CreateOrUpdateStrDTO vers Structure pour création
      */
     @Mapping(target = "strId", ignore = true) // L'ID sera généré automatiquement
-
     @Mapping(target = "strType", source = "typeCode", qualifiedByName = "mapTypeCode")
     @Mapping(target = "strParent", source = "parentId", qualifiedByName = "mapParentId")
     @Mapping(target = "strChildren", ignore = true)
@@ -48,12 +45,18 @@ public interface StrMapper
     /**
      * Mapping de CreateOrUpdateStrDTO vers Structure existante pour mise à jour
      */
-
     @Mapping(target = "strType", source = "typeCode", qualifiedByName = "mapTypeCode")
     @Mapping(target = "strParent", source = "parentId", qualifiedByName = "mapParentId")
     @Mapping(target = "strChildren", ignore = true)
     @Mapping(target = "creationActFilePath", ignore = true)
     Structure updateStructureFromDTO(CreateOrUpdateStrDTO dto, @MappingTarget Structure structure);
+
+    @Mapping(target = "strId", ignore = true)
+    @Mapping(target = "strType", source = "typeCode", qualifiedByName = "mapTypeCode")
+    @Mapping(target = "strChildren", ignore = true)
+    @Mapping(target = "creationActFilePath", ignore = true)
+    @Mapping(target = "strParent", source = "parentId", qualifiedByName = "mapParentId")
+    Structure updateParentFromChangeAnchorDto(ChangeAnchorDTO dto, @MappingTarget Structure structure);
 
     /**
      * Méthode personnalisée pour mapper le code du type vers l'entité Type
@@ -80,5 +83,4 @@ public interface StrMapper
         }
         return new Structure(parentId);
     }
-
 }
