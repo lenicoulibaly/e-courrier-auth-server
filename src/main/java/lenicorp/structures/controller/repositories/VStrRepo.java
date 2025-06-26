@@ -18,9 +18,6 @@ public class VStrRepo implements PanacheRepository<VStructure>
 {
     @Inject private StrMapper strMapper;
 
-    /**
-     * Trouve tous les descendants d'une structure donnée
-     */
     public List<ReadStrDTO> findAllDescendants(Long strId)
     {
         String parentChaineSigles = find("strId", strId).firstResult().getChaineSigles();
@@ -50,23 +47,25 @@ public class VStrRepo implements PanacheRepository<VStructure>
                 from VStructure vs 
                 where 
                     vs.strTypeCode = coalesce(:typeCode, vs.strTypeCode) 
-                    and vs.chaineSigles like concat(:parentChaineSigles, '%')
                     and (vs.strName like :key or vs.strSigle like :key)
                 """;
+        if (parentChaineSigles != null) baseQuery += " and vs.chaineSigles like :parentChaineSigles";
+
         String countQuery = "select count(vs.strId) " + baseQuery;
         String selectQuery = "select vs " + baseQuery + " order by vs.chaineSigles";
         
-        Long totalEments = getEntityManager().createQuery(countQuery, Long.class)
+         var countQueryExecutor = getEntityManager().createQuery(countQuery, Long.class)
                 .setParameter("key", safeKey)
-                .setParameter("typeCode", typeCode)
-                .setParameter("parentChaineSigles", parentChaineSigles)
-                .getSingleResult();
+                .setParameter("typeCode", typeCode);
+        if(parentChaineSigles != null) countQueryExecutor.setParameter("parentChaineSigles", parentChaineSigles + "%");
+        Long totalEments = countQueryExecutor.getSingleResult();
 
-        List<VStructure> content = getEntityManager().createQuery(selectQuery, VStructure.class)
+        var selectQueryExecutor = getEntityManager().createQuery(selectQuery, VStructure.class)
             .setParameter("key", safeKey)
-            .setParameter("typeCode", typeCode)
-            .setParameter("parentChaineSigles", parentChaineSigles)
-                .setMaxResults(size).setFirstResult(page * size).getResultList();
+            .setParameter("typeCode", typeCode);
+
+        if(parentChaineSigles != null) selectQueryExecutor.setParameter("parentChaineSigles", parentChaineSigles+ "%");
+        List<VStructure> content = selectQueryExecutor.setMaxResults(size).setFirstResult(page * size).getResultList();
 
         List<ReadStrDTO> readStrDTOList = strMapper.mapToReadStrDTOList(content);
 

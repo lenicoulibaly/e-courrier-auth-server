@@ -20,15 +20,15 @@ public class StrController
     @Inject
     private IStrService strService;
 
+    @GET
     @Path("/search")
-    @POST
-    public Page<ReadStrDTO> searchStrs(@QueryParam("key") String key,
-                                       @QueryParam("parentId") Long parentId,
-                                       @QueryParam("typeCode") String typeCode,
-                                       @QueryParam("page") @DefaultValue("0") int page,
-                                       @QueryParam("size") @DefaultValue("10") int size)
+    public Page<ReadStrDTO> search(@QueryParam("key") String key,
+                                   @QueryParam("parentId") Long parentId,
+                                   @QueryParam("typeCode") String typeCode,
+                                   @QueryParam("page") @DefaultValue("0") int page,
+                                   @QueryParam("size") @DefaultValue("10") int size)
     {
-        return strService.searchStrs(key, parentId, typeCode, new PageRequest(page, size));
+        return strService.searchStrs(key, parentId, typeCode, PageRequest.of(page, size));
     }
 
     @POST
@@ -50,17 +50,6 @@ public class StrController
     public ReadStrDTO changeAnchor(ChangeAnchorDTO dto)
     {
         return strService.changeAnchor(dto);
-    }
-
-    @GET
-    @Path("/search")
-    public Page<ReadStrDTO> search(@QueryParam("key") String key,
-                                   @QueryParam("key") Long parentId,
-                                   @QueryParam("typeCode") String typeCode,
-                                   @QueryParam("page") @DefaultValue("0") int page,
-                                   @QueryParam("size") @DefaultValue("10") int size)
-    {
-        return strService.searchStrs(key, parentId, typeCode, PageRequest.of(page, size));
     }
 
     @GET
