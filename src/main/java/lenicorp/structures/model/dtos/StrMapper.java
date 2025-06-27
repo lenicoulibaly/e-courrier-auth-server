@@ -39,7 +39,6 @@ public interface StrMapper
     @Mapping(target = "strType", source = "typeCode", qualifiedByName = "mapTypeCode")
     @Mapping(target = "strParent", source = "parentId", qualifiedByName = "mapParentId")
     @Mapping(target = "strChildren", ignore = true)
-    @Mapping(target = "creationActFilePath", ignore = true)
     Structure mapToStructureForCreate(CreateOrUpdateStrDTO dto);
 
     /**
@@ -48,13 +47,11 @@ public interface StrMapper
     @Mapping(target = "strType", source = "typeCode", qualifiedByName = "mapTypeCode")
     @Mapping(target = "strParent", source = "parentId", qualifiedByName = "mapParentId")
     @Mapping(target = "strChildren", ignore = true)
-    @Mapping(target = "creationActFilePath", ignore = true)
     Structure updateStructureFromDTO(CreateOrUpdateStrDTO dto, @MappingTarget Structure structure);
 
     @Mapping(target = "strId", ignore = true)
     @Mapping(target = "strType", source = "typeCode", qualifiedByName = "mapTypeCode")
     @Mapping(target = "strChildren", ignore = true)
-    @Mapping(target = "creationActFilePath", ignore = true)
     @Mapping(target = "strParent", source = "parentId", qualifiedByName = "mapParentId")
     Structure updateParentFromChangeAnchorDto(ChangeAnchorDTO dto, @MappingTarget Structure structure);
 
