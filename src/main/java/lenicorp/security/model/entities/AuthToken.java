@@ -18,7 +18,6 @@ public class AuthToken
     private LocalDateTime expirationDate;
     private LocalDateTime usageDate;
     private boolean alreadyUsed;
-    private Long agentId; // Très important pour lier le token à un agent (acteur) au cas où user est null
     private String password; // Mot de passe d'utilisation du token aléatoirement généré!
     private boolean emailSent;
     @ManyToOne

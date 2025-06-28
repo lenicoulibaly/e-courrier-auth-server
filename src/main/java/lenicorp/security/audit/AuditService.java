@@ -1,15 +1,15 @@
 package lenicorp.security.audit;
 
+import io.quarkus.arc.Unremovable;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.vertx.ext.web.RoutingContext;
 
-@RequestScoped
+@RequestScoped @Unremovable
 public class AuditService
 {
-    @Inject
-    SecurityIdentity securityIdentity;
+    @Inject SecurityIdentity securityIdentity;
 
     @Inject
     RoutingContext routingContext; // ✅ Fonctionne avec Quarkus

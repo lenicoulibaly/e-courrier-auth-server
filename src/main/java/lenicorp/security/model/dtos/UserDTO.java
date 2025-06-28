@@ -20,6 +20,7 @@ public class UserDTO
     private String password;
     private String rePassword;
     private String oldPassword;
+    private String resetPasswordToken;
     private LocalDate changePasswordDate;
     private boolean activated = false;
     private LocalDateTime lastLogin;

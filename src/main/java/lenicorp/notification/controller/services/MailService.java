@@ -1,7 +1,11 @@
 package lenicorp.notification.controller.services;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.UserTransaction;
 import lenicorp.notification.controller.dao.EmailNotificationRepo;
 import lenicorp.notification.model.dto.MailMapper;
 import lenicorp.notification.model.dto.MailRequest;
@@ -29,6 +33,7 @@ public class MailService implements MailServiceInterface
     @Inject MailConfig mailConfig;
     @Inject EmailNotificationRepo emailNotificationRepo;
     @Inject MailMapper mailMapper;
+    @Inject UserTransaction userTransaction;
 
     @Override
     public CompletableFuture<MailResponse> envoyerEmailActivation(String destinataire, String nomDestinataire, String lienActivation)
@@ -71,34 +76,37 @@ public class MailService implements MailServiceInterface
     }
 
     @Override
-    public CompletableFuture<MailResponse> sendMailAsync(MailRequest mailRequest)
-    {
-        return CompletableFuture.supplyAsync(() ->
-        {
-            try
-            {
-                // Convertir MailRequest en un objet Mail Quarkus
+    @ActivateRequestContext
+    public CompletableFuture<MailResponse> sendMailAsync(MailRequest mailRequest) {
+        EmailNotification notification = mailMapper.mapToToEmailNotification(mailRequest);
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                userTransaction.begin();
                 Mail mail = createMail(mailRequest);
 
-                // Appel synchrone à mailer.send()
+                // Tenter l'envoi
                 mailer.send(mail);
 
-                EmailNotification notification = mailMapper.mapToToEmailNotification(mailRequest);
+                // Si succès, marquer comme envoyé et persister
                 notification.setSent(true);
+                notification.setSendingDate(LocalDateTime.now());
                 emailNotificationRepo.persist(notification);
 
+                userTransaction.commit();
 
-                // Retourner une réponse positive
                 return MailResponse.builder()
                         .success(true)
                         .sentAt(LocalDateTime.now())
                         .build();
 
-            } catch (Exception e)
-            {
-                // Enregistrement des erreurs et retour d'échec
-                log.error("Erreur lors de l'envoi de l'email à: {}", mailRequest.getTo(), e);
+            } catch (Exception e) {
+                try {
+                    userTransaction.rollback();
+                } catch (SystemException rollbackException) {
+                    log.error("Erreur lors du rollback", rollbackException);
+                }
 
+                log.error("Erreur lors de l'envoi de l'email à: {}", mailRequest.getTo(), e);
                 return MailResponse.builder()
                         .success(false)
                         .errorMessage(e.getMessage())
@@ -107,6 +115,7 @@ public class MailService implements MailServiceInterface
             }
         });
     }
+
 
     private Mail createMail(MailRequest mailRequest)
     {

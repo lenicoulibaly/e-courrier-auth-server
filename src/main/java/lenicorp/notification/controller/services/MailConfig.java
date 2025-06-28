@@ -30,8 +30,8 @@ public class MailConfig
     @ConfigProperty(name = "quarkus.mailer.mock", defaultValue = "false")
     Boolean mockMode;
     
-    @ConfigProperty(name = "quarkus.mailer.ssl", defaultValue = "false")
-    Boolean sslEnabled;
+    @ConfigProperty(name = "quarkus.mailer.tls", defaultValue = "false")
+    Boolean tlsEnabled;
     
     @ConfigProperty(name = "quarkus.mailer.start-tls")
     String startTls;
@@ -44,4 +44,12 @@ public class MailConfig
     
     @ConfigProperty(name = "quarkus.mailer.template-from")
     String templateFrom;
+
+
+    @ConfigProperty(name = "quarkus.mailer.password")
+    String password;
+
+    @ConfigProperty(name = "quarkus.mailer.from")
+    String from;
+
 }
