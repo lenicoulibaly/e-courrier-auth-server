@@ -1,6 +1,7 @@
 package lenicorp.notification.model.entities;
 
 import jakarta.persistence.*;
+import lenicorp.security.audit.AuditableEntity;
 import lenicorp.security.model.entities.AppUser;
 import lombok.*;
 import org.hibernate.envers.Audited;
@@ -8,11 +9,15 @@ import org.hibernate.envers.Audited;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Audited
-public class EmailNotification
+public class EmailNotification extends AuditableEntity
 {
-    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "NOTIF_ID_GEN")
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "NOTIF_ID_GEN")
     @SequenceGenerator(name = "NOTIF_ID_GEN", sequenceName = "NOTIF_ID_GEN", allocationSize = 10)
     private Long mailId;
     private String recipientName;
@@ -39,7 +44,8 @@ public class EmailNotification
     }
 
     @Override
-    public String toString() {
-        return mailId +"_"+ recipientName + "_" + email + "_" + token;
+    public String toString()
+    {
+        return mailId + "_" + recipientName + "_" + email + "_" + token;
     }
 }

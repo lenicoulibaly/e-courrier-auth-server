@@ -22,7 +22,7 @@ public class UserController
         userService.sendActivationEmail(userId);
     }
 
-    @POST
+    @GET
     @Path("/send-reset-password-email/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
