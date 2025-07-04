@@ -15,11 +15,13 @@ public class Page<T>
     private int totalPages;
     private int page;
     private int size;
+    private int numberOfElements;
 
     public Page(List<T> content, long totalElements, int page, int size)
     {
         this(content, totalElements, size);
         this.page = page;
+        this.numberOfElements = content != null ? content.size() : 0;
     }
 
     public Page(List<T> content, long totalElements, int size)

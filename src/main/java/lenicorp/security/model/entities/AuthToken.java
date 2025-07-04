@@ -1,20 +1,21 @@
 package lenicorp.security.model.entities;
 
 import jakarta.persistence.*;
+import lenicorp.security.audit.AuditableEntity;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class AuthToken
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder @Audited
+public class AuthToken extends AuditableEntity
 {
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TOKEN_ID_GEN")
     @SequenceGenerator(name = "TOKEN_ID_GEN", sequenceName = "TOKEN_ID_GEN", allocationSize = 10)
     private Long tokenId;
     @Column(unique = true)
     private String token;
-    private LocalDateTime creationDate;
     private LocalDateTime expirationDate;
     private LocalDateTime usageDate;
     private boolean alreadyUsed;
@@ -34,7 +35,7 @@ public class AuthToken
         this.emailSent = false;
         this.alreadyUsed = false;
         this.user = user;
-        this.creationDate = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
         this.expirationDate = LocalDateTime.now().plusDays(1);
     }
 

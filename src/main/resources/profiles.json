@@ -1,0 +1,29 @@
+[
+  {
+    "code": "PRFL_ADMIN_FONC",
+    "name": "Profile administrateur fonctionnel",
+    "description": "Profile administrateur fonctionnel",
+    "typeCode": "PRFL",
+    "typeName": "Profile",
+    "children": [{"code": "ROL_ADMIN_FONC"}]
+  },
+  {
+    "code": "PRFL_ADMIN_TECH",
+    "name": "Profile administrateur technique",
+    "description": "Profile administrateur technique",
+    "typeCode": "PRFL",
+    "typeName": "Profile",
+    "children": [{"code": "ROL_ADMIN_TECH"}]
+  },
+  {
+    "code": "PRFL_ADMIN_GLOBAL",
+    "name": "Profile administrateur global",
+    "description": "Profile administrateur global",
+    "typeCode": "PRFL",
+    "typeName": "Profile",
+    "children": [{"code": "ROL_ADMIN_GLOBAL"}]
+  }
+
+]
+
+

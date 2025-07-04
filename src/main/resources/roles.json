@@ -1,0 +1,515 @@
+[
+  {
+    "code": "ROL_ADMIN_FONC",
+    "name": "Administrateur fonctionnel",
+    "description": "Administrateur fonctionnel",
+    "typeCode": "ROL",
+    "typeName": "Role",
+    "children": [
+      {
+      "code": "CRT_TYP",
+      "name": "Créer un type",
+      "description": "Créer un type",
+      "typeCode": "PRV",
+      "typeName": "Privilege",
+      "children": []
+    },
+      {
+        "code": "UPDT_TYP",
+        "name": "modifier un type",
+        "description": "modifier un type",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "GET_TYP",
+        "name": "Consulter la liste des types",
+        "description": "Consulter la liste des types",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_TYP_GRP",
+        "name": "Créer un groupe de type",
+        "description": "Créer un groupe de type",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPDT_TYP_GRP",
+        "name": "modifier un groupe de type",
+        "description": "modifier un groupe de type",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "GET_TYP_GRP",
+        "name": "Consulter la liste des groupes de type",
+        "description": "Consulter la liste des groupes de type",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "ADD_SUB_TYP_TYP",
+        "name": "Ajouter un sous-type",
+        "description": "Ajouter un sous-type",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "GET_STR",
+        "name": "Consulter la liste des structures",
+        "description": "Consulter la liste des structures",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_STR",
+        "name": "Créer une structure",
+        "description": "Créer une structure",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPDT_STR",
+        "name": "Modifier une structure",
+        "description": "Modifier une structure",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPD_ANCHOR_STR",
+        "name": "Modifier l'ancre d'une structure",
+        "description": "Modifier l'ancre d'une structure",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "ALL_STR_BY_CRT",
+        "name": "Rechercher des structures",
+        "description": "Rechercher des structures selon des critères",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      }
+    ]
+  },
+  {
+    "code": "ROL_ADMIN_TECH",
+    "name": "Administrateur technique",
+    "description": "Administrateur technique",
+    "typeCode": "ROL",
+    "typeName": "Role",
+    "children": [
+      {
+        "code": "GET_USR",
+        "name": "Consulter la liste des utilisateurs",
+        "description": "Consulter la liste des utilisateurs",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_USR",
+        "name": "Créer un utilisateur",
+        "description": "Créer un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPDT_USR",
+        "name": "Modifier un utilisateur",
+        "description": "Modifier un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "ATC_USR",
+        "name": "Activer un utilisateur",
+        "description": "Activer un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "BLK_USR",
+        "name": "Bloquer un utilisateur",
+        "description": "Bloquer un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UNBLK_USR",
+        "name": "Débloquer un utilisateur",
+        "description": "Débloquer un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPD_OWN_PWD",
+        "name": "Changer son mot de passe",
+        "description": "Changer son mot de passe",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "RST_OWN_PWD",
+        "name": "Réinitialiser son mot de passe",
+        "description": "Réinitialiser son mot de passe",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "SEND_ACT_MAIL",
+        "name": "Envoyer un mail d'activation",
+        "description": "Envoyer un mail d'activation",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "SEND_RST_PWD_MAIL",
+        "name": "Envoyer un mail d e réinitialisation de mot de passe",
+        "description": "Envoyer un mail d e réinitialisation de mot de passe",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "GET_USR_PRFL",
+        "name": "Consulter le profil d'un utilisateur",
+        "description": "Consulter le profil d'un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+
+
+      {
+        "code": "GET_USR_AUTH",
+        "name": "Consulter les autorisations d'un utilisateur",
+        "description": "Consulter les autorisations d'un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_PRV",
+        "name": "Créer un privilège",
+        "description": "Créer un privilège",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPD_PRV",
+        "name": "Modifier un privilège",
+        "description": "Modifier un privilège",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_ROL",
+        "name": "Créer un role",
+        "description": "Créer un role",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPD_ROL",
+        "name": "Modifier un role",
+        "description": "Modifier un role",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_PRFL",
+        "name": "Créer un profile",
+        "description": "Créer un profile",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPD_PRFL",
+        "name": "Modifier un profile",
+        "description": "Modifier un profile",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      }]
+  },
+  {
+    "code": "ROL_ADMIN_GLOBAL",
+    "name": "Administrateur global",
+    "description": "Administrateur global",
+    "typeCode": "ROL",
+    "typeName": "Role",
+    "children": [
+      {
+        "code": "GET_USR",
+        "name": "Consulter la liste des utilisateurs",
+        "description": "Consulter la liste des utilisateurs",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_USR",
+        "name": "Créer un utilisateur",
+        "description": "Créer un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPDT_USR",
+        "name": "Modifier un utilisateur",
+        "description": "Modifier un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "ATC_USR",
+        "name": "Activer un utilisateur",
+        "description": "Activer un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "BLK_USR",
+        "name": "Bloquer un utilisateur",
+        "description": "Bloquer un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UNBLK_USR",
+        "name": "Débloquer un utilisateur",
+        "description": "Débloquer un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPD_OWN_PWD",
+        "name": "Changer son mot de passe",
+        "description": "Changer son mot de passe",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "RST_OWN_PWD",
+        "name": "Réinitialiser son mot de passe",
+        "description": "Réinitialiser son mot de passe",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "SEND_ACT_MAIL",
+        "name": "Envoyer un mail d'activation",
+        "description": "Envoyer un mail d'activation",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "SEND_RST_PWD_MAIL",
+        "name": "Envoyer un mail d e réinitialisation de mot de passe",
+        "description": "Envoyer un mail d e réinitialisation de mot de passe",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "GET_USR_PRFL",
+        "name": "Consulter le profil d'un utilisateur",
+        "description": "Consulter le profil d'un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+
+
+      {
+        "code": "GET_USR_AUTH",
+        "name": "Consulter les autorisations d'un utilisateur",
+        "description": "Consulter les autorisations d'un utilisateur",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_PRV",
+        "name": "Créer un privilège",
+        "description": "Créer un privilège",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPD_PRV",
+        "name": "Modifier un privilège",
+        "description": "Modifier un privilège",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_ROL",
+        "name": "Créer un role",
+        "description": "Créer un role",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPD_ROL",
+        "name": "Modifier un role",
+        "description": "Modifier un role",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_PRFL",
+        "name": "Créer un profile",
+        "description": "Créer un profile",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPD_PRFL",
+        "name": "Modifier un profile",
+        "description": "Modifier un profile",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_TYP",
+        "name": "Créer un type",
+        "description": "Créer un type",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPDT_TYP",
+        "name": "modifier un type",
+        "description": "modifier un type",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "GET_TYP",
+        "name": "Consulter la liste des types",
+        "description": "Consulter la liste des types",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_TYP_GRP",
+        "name": "Créer un groupe de type",
+        "description": "Créer un groupe de type",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPDT_TYP_GRP",
+        "name": "modifier un groupe de type",
+        "description": "modifier un groupe de type",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "GET_TYP_GRP",
+        "name": "Consulter la liste des groupes de type",
+        "description": "Consulter la liste des groupes de type",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "ADD_SUB_TYP_TYP",
+        "name": "Ajouter un sous-type",
+        "description": "Ajouter un sous-type",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "GET_STR",
+        "name": "Consulter la liste des structures",
+        "description": "Consulter la liste des structures",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "CRT_STR",
+        "name": "Créer une structure",
+        "description": "Créer une structure",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPDT_STR",
+        "name": "Modifier une structure",
+        "description": "Modifier une structure",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "UPD_ANCHOR_STR",
+        "name": "Modifier l'ancre d'une structure",
+        "description": "Modifier l'ancre d'une structure",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      },
+      {
+        "code": "ALL_STR_BY_CRT",
+        "name": "Rechercher des structures",
+        "description": "Rechercher des structures selon des critères",
+        "typeCode": "PRV",
+        "typeName": "Privilege",
+        "children": []
+      }
+    ]
+  }
+
+]
+
+

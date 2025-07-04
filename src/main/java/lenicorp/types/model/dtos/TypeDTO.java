@@ -2,10 +2,10 @@ package lenicorp.types.model.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lenicorp.types.model.validators.CreateGroup;
+import lenicorp.utilities.validatorgroups.CreateGroup;
 import lenicorp.types.model.validators.ExistingGroupCode;
 import lenicorp.types.model.validators.UniqueTypeName;
-import lenicorp.types.model.validators.UpdateGroup;
+import lenicorp.utilities.validatorgroups.UpdateGroup;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

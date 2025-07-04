@@ -12,8 +12,8 @@ import lenicorp.utilities.Page;
 import lenicorp.utilities.PageRequest;
 import lenicorp.types.model.dtos.TypeDTO;
 import lenicorp.types.model.dtos.TypeGroupDTO;
-import lenicorp.types.model.validators.CreateGroup;
-import lenicorp.types.model.validators.UpdateGroup;
+import lenicorp.utilities.validatorgroups.CreateGroup;
+import lenicorp.utilities.validatorgroups.UpdateGroup;
 
 import java.util.List;
 import java.util.Map;

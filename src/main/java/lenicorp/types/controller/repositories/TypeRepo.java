@@ -3,21 +3,21 @@ package lenicorp.types.controller.repositories;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import lenicorp.utilities.Page;
-import lenicorp.utilities.PageRequest;
-import lenicorp.utilities.StringUtils;
 import lenicorp.types.model.dtos.TypeDTO;
 import lenicorp.types.model.entities.Type;
 import lenicorp.types.model.mappers.TypeMapper;
+import lenicorp.utilities.Page;
+import lenicorp.utilities.PageRequest;
+import lenicorp.utilities.StringUtils;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ApplicationScoped
+@ApplicationScoped @RequiredArgsConstructor
 public class TypeRepo implements PanacheRepositoryBase<Type, String>
 {
-    @Inject private TypeMapper typeMapper;
+    private final TypeMapper typeMapper;
 
     public Boolean existsByCode(String code)
     {
@@ -121,5 +121,11 @@ public class TypeRepo implements PanacheRepositoryBase<Type, String>
                 .createQuery(query, String.class)
                 .setParameter("typeCode", StringUtils.stripAccentsToUpperCase(typeCode))
                 .getResultList();
+    }
+
+    public boolean existsByCodeAndGroupCode(String typeCode, String groupCode)
+    {
+        if (StringUtils.isBlank(typeCode) || StringUtils.isBlank(groupCode)) return false;
+        return this.count("upper(code) = upper(?1) and upper(typeGroup.groupCode) = upper(?2)", typeCode, groupCode) > 0;
     }
 }
