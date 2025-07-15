@@ -1,0 +1,10 @@
+implementer un endpoint @GET
+    @Path("/privileges/list/by-role-codes")
+    public List<AuthorityDTO> getPrivilegesListByRoleCodes(
+            @QueryParam("roleCodes") List<String> roleCodes)
+    {
+        return authorityService.getPrivilegesListByRoleCodes(roleCodes);
+    }
+    qui retourne pour une liste de roleCode passés en paramètre la liste
+    sans doublon des privilèges liés. Si aucun roleCode n'est passé en paramètre,
+    retourner tous les privilèges
