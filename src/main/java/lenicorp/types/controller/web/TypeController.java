@@ -8,11 +8,12 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lenicorp.types.controller.services.ITypeService;
-import lenicorp.utilities.Page;
-import lenicorp.utilities.PageRequest;
 import lenicorp.types.model.dtos.TypeDTO;
 import lenicorp.types.model.dtos.TypeGroupDTO;
+import lenicorp.utilities.Page;
+import lenicorp.utilities.PageRequest;
 import lenicorp.utilities.validatorgroups.CreateGroup;
+import lenicorp.utilities.validatorgroups.SetSousTypeGroup;
 import lenicorp.utilities.validatorgroups.UpdateGroup;
 
 import java.util.List;
@@ -68,6 +69,13 @@ public class TypeController {
     }
 
     @GET
+    @Path("/groups/list")
+    public List<TypeGroupDTO> getAllTypeGroups()
+    {
+        return typeService.getAllTypeGroups();
+    }
+
+    @GET
     @Path("/direct-sous-types")
     @Produces(MediaType.APPLICATION_JSON)
     public List<TypeDTO> getDirectSousTypes(@QueryParam("parentCode") String parentCode) {
@@ -78,7 +86,8 @@ public class TypeController {
     @Path("/set-sous-types")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response setSousTypes(TypeDTO dto) {
+    public Response setSousTypes(@Valid @ConvertGroup(to = SetSousTypeGroup.class) TypeDTO dto)
+    {
         try {
             typeService.setSousTypes(dto);
             return Response.ok().build();

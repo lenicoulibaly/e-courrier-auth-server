@@ -181,4 +181,10 @@ public class TypeService implements ITypeService
     {
         return typeRepo.findByGroupCode(groupCode);
     }
+
+    @Override
+    public List<TypeGroupDTO> getAllTypeGroups()
+    {
+        return typeGroupRepo.getAllTypeGroupes();
+    }
 }

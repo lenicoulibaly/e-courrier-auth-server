@@ -93,4 +93,10 @@ public class TypeGroupRepo implements PanacheRepositoryBase<TypeGroup, String>
             return null;
         }
     }
+
+    public List<TypeGroupDTO> getAllTypeGroupes()
+    {
+        String query = "select new lenicorp.types.model.dtos.TypeGroupDTO(tg.groupCode, tg.name) from TypeGroup tg";
+        return getEntityManager().createQuery(query, TypeGroupDTO.class).getResultList().stream().collect(Collectors.toList());
+    }
 }

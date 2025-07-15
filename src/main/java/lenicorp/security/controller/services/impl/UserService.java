@@ -181,4 +181,15 @@ public class UserService implements IUserService
         userRepo.persist(user);
         return jwtService.getTokens(user);
     }
+
+    @Transactional @Override
+    public AuthResponse refreshToken(Long userId)
+    {
+        AppUser user = userRepo.findById(userId);
+        if (user == null) throw new AppException("UserId incorrect ou inexistant : " + userId);
+
+        user.setLastLogin(LocalDateTime.now());
+        userRepo.persist(user);
+        return jwtService.getTokens(user);
+    }
 }

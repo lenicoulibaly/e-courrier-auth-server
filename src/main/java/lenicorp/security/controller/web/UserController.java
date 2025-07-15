@@ -28,6 +28,15 @@ public class UserController
         return userService.login(user);
     }
 
+    @GET
+    @Path("/refresh-token/{userId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public AuthResponse refreshToken(@PathParam("userId") Long userId)
+    {
+        return userService.refreshToken(userId);
+    }
+
 
     @POST
     @Path("/create")

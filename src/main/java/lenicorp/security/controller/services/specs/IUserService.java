@@ -36,4 +36,7 @@ public interface IUserService
 
     @Transactional
     AuthResponse login(UserDTO dto);
+
+    @Transactional
+    AuthResponse refreshToken(Long userId);
 }

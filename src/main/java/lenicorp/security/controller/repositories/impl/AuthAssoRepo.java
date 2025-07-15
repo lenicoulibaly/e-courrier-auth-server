@@ -113,21 +113,30 @@ public class AuthAssoRepo implements IAuthAssoRepo
     {
         if(privilegeCodes == null || privilegeCodes.isEmpty()) return List.of();
         String sql = """
-                SELECT DISTINCT prv.code as code, prv.name as name, prv.description as description, 
-                auth_type.code as type_code, auth_type.name as type_name 
-                FROM app_authority prv 
-                    LEFT JOIN type auth_type ON auth_type.code = prv.type_code  
+                SELECT DISTINCT vp.code, vp.name, vp.description, 
+                'PRV' as type_code, 'Privilège' as type_name, vp.privilege_type_code, vp.privilege_type_name  
+                FROM v_privilege vp 
+
                 WHERE 
-                    prv.code IN (?2) 
-                    AND prv.code NOT IN 
-                        (SELECT vrp.privilege_code FROM v_role_privilege vrp WHERE vrp.role_code = ?1))
+                    vp.code IN (?2) 
+                    AND vp.code NOT IN 
+                        (SELECT vrp.privilege_code FROM v_role_privilege vrp WHERE vrp.role_code = ?1)
                 """;
         return getEntityManager()
                 .createNativeQuery(sql)
                 .setParameter(1, roleCode)
                 .setParameter(2, privilegeCodes)
                 .unwrap(org.hibernate.query.Query.class)
-                .setResultTransformer(new AliasToBeanResultTransformer(AuthorityDTO.class))
+                .setResultTransformer((tuple, aliases) -> {
+                    String code = (String) tuple[0];
+                    String name = (String) tuple[1];
+                    String description = (String) tuple[2];
+                    String typeCode = (String) tuple[3];
+                    String typeName = (String) tuple[4];
+                    String privilegeTypeCode = (String) tuple[5];
+                    String privilegeTypeName = (String) tuple[6];
+                    return new AuthorityDTO(code, name, description, typeCode, typeName, privilegeTypeCode, privilegeTypeName);
+                })
                 .getResultList();
     }
 
@@ -136,20 +145,28 @@ public class AuthAssoRepo implements IAuthAssoRepo
     {
         if(privilegeCodes == null || privilegeCodes.isEmpty()) return List.of();
         String sql = """
-                SELECT DISTINCT prv.code as code, prv.name as name, prv.description as description, 
-                t.code as type_code, t.name as type_name 
-                FROM app_authority prv 
-                    LEFT JOIN type t ON t.code = prv.type_code 
+                SELECT DISTINCT vp.code, vp.name, vp.description, 
+                'PRV' as type_code, 'Privilège' as type_name, vp.privilege_type_code, vp.privilege_type_name
+                FROM v_privilege vp 
                 WHERE 
-                    prv.code NOT IN (?2) 
-                    AND prv.code IN (select vrp.privilege_code from v_role_privilege vrp where vrp.role_code = ?1)
+                    vp.code NOT IN (?2) 
+                    AND vp.code IN (select vrp.privilege_code from v_role_privilege vrp where vrp.role_code = ?1)
         """;
         return getEntityManager()
                 .createNativeQuery(sql)
                 .setParameter(1, roleCode)
                 .setParameter(2, privilegeCodes)
                 .unwrap(org.hibernate.query.Query.class)
-                .setResultTransformer(new AliasToBeanResultTransformer(AuthorityDTO.class))
+                .setResultTransformer((tuple, aliases) -> {
+                    String code = (String) tuple[0];
+                    String name = (String) tuple[1];
+                    String description = (String) tuple[2];
+                    String typeCode = (String) tuple[3];
+                    String typeName = (String) tuple[4];
+                    String privilegeTypeCode = (String) tuple[5];
+                    String privilegeTypeName = (String) tuple[6];
+                    return new AuthorityDTO(code, name, description, typeCode, typeName, privilegeTypeCode, privilegeTypeName);
+                })
                 .getResultList();
     }
 
@@ -182,7 +199,7 @@ public class AuthAssoRepo implements IAuthAssoRepo
                     LEFT JOIN type t ON t.code = rol.type_code 
                 WHERE 
                     rol.code IN (?2) 
-                    AND rol.code NOT IN (select vpr.role_code from v_profile_role vpr where vpr.profile_code = ?1))
+                    AND rol.code NOT IN (select vpr.role_code from v_profile_role vpr where vpr.profile_code = ?1)
         """;
         return getEntityManager()
                 .createNativeQuery(sql)
@@ -201,8 +218,8 @@ public class AuthAssoRepo implements IAuthAssoRepo
                 select DISTINCT rol.code as code, rol.name as name, rol.description as description, 
                 t.code as type_code, t.name as type_name from app_authority rol 
                 left join type t on t.code = rol.type_code 
-                where t.type_code = 'ROL' 
-                and rol.code in (select vpr.role_code from v_profile_role vpr where ass.profile_code = ?1) ) )
+                where t.code = 'ROL' 
+                and rol.code in (select vpr.role_code from v_profile_role vpr where vpr.profile_code = ?1)
                 and rol.code NOT IN (?2) 
                 """;
         return getEntityManager()
@@ -239,7 +256,7 @@ public class AuthAssoRepo implements IAuthAssoRepo
         select count(vup) 
         from VUserProfile vup 
         where vup.userId = :userId and vup.profileCode = :profileCode and vup.strId = :strId
-                                                                         
+
         """;
         Long count = this.getEntityManager().createQuery(sql, Long.class)
         .setParameter("userId", userId)
@@ -309,6 +326,39 @@ public class AuthAssoRepo implements IAuthAssoRepo
                 .collect(Collectors.toList());
 
         return new Page<>(content, count, page, size);
+    }
+
+    @Override
+    public List<AuthorityDTO> getPrivilegesListByTypeCode(List<String> privilegeTypeCodes)
+    {
+        String sql = """
+    select vp.code, vp.name, vp.description, vp.privilege_type_code, vp.privilege_type_name
+    from v_privilege vp 
+    where true
+    """;
+
+        if(privilegeTypeCodes != null && !privilegeTypeCodes.isEmpty()) sql += " and vp.privilege_type_code in (?1)";
+        sql += "   order by vp.name";
+
+        var sqlExecutor = getEntityManager().createNativeQuery(sql);
+        if(privilegeTypeCodes != null && !privilegeTypeCodes.isEmpty()) sqlExecutor.setParameter(1, privilegeTypeCodes);
+
+        List<Object[]> results = sqlExecutor.getResultList();
+
+        // Utilisation du constructeur spécialisé avec authType "PRV"
+        List<AuthorityDTO> content = results.stream()
+                .map(row -> new AuthorityDTO(
+                        (String) row[0], // code
+                        (String) row[1], // name
+                        (String) row[2], // description
+                        "PRV", // typeCode
+                        "Privilège", // typeName
+                        (String) row[3], // privilegeTypeCode
+                        (String) row[4], // privilegeTypeName
+                        "PRV" // authType pour assigner privilegeCode
+                ))
+                .collect(Collectors.toList());
+        return content;
     }
 
     @Override

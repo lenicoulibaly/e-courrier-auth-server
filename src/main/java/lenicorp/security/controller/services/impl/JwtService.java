@@ -3,7 +3,9 @@ package lenicorp.security.controller.services.impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import io.smallrye.jwt.build.Jwt;
+import jakarta.inject.Inject;
 import lenicorp.exceptions.AppException;
+import lenicorp.security.controller.repositories.impl.UserRepo;
 import lenicorp.security.controller.repositories.spec.IAuthAssoRepo;
 import lenicorp.security.controller.services.specs.IJwtService;
 import lenicorp.security.model.dtos.AuthResponse;
@@ -19,6 +21,8 @@ public class JwtService implements IJwtService
 {
     @ConfigProperty(name = "mp.jwt.verify.issuer")
     String issuer;
+    @Inject
+    UserRepo userRepo;
 
     @ConfigProperty(name = "jwt.access-token-duration", defaultValue = "3600")
     private long accessTokenDuration;
@@ -31,7 +35,7 @@ public class JwtService implements IJwtService
     @Override
     public String generateAccessToken(AppUser user)
     {
-        if (user == null || user.getUserId() == null || user.getEmail() == null) throw new AppException("User must not be null and must have a valid userId");
+        user = checkUserNullity(user);
         Long userId = user.getUserId();
         String username = user.getEmail();
         Long strId = user.getStructure() != null ? user.getStructure().getStrId() : null;
@@ -39,8 +43,8 @@ public class JwtService implements IJwtService
         Set<String> authorities = authAssoRepo.findAuthoritiesByUsername(username);
 
         return Jwt.issuer(issuer)
-                .upn(userId.toString())
-                .subject(username)
+                .upn(username)
+                .subject(userId.toString())
                 .claim("firstName", user.getFirstName())
                 .claim("lastName", user.getLastName())
                 .claim("strId", strId)
@@ -52,12 +56,21 @@ public class JwtService implements IJwtService
     @Override
     public String generateRefreshToken(AppUser user)
     {
-        if (user == null || user.getUserId() == null) throw new AppException("User must not be null and must have a valid userId");
+        user = checkUserNullity(user);
+
         return Jwt.issuer(issuer)
                 .upn(user.getEmail())
                 .subject(user.getUserId().toString())
                 .expiresAt(Instant.now().plusSeconds(refreshTokenDuration))
                 .sign();
+    }
+
+    private AppUser checkUserNullity(AppUser user)
+    {
+        if (user == null || (user.getUserId() == null && user.getEmail() == null)) throw new AppException("User must not be null and must have a valid userId");
+        if(user.getEmail() == null) user = userRepo.findById(user.getUserId());
+        if(user.getUserId() == null) user = userRepo.findByUsername(user.getEmail());
+        return user;
     }
 
     @Override

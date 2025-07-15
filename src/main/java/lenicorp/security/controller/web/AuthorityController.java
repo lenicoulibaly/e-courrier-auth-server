@@ -101,6 +101,14 @@ public class AuthorityController
     }
 
     @GET
+    @Path("/privileges/list")
+    public List<AuthorityDTO> getPrivilegesListByTypeCode(
+            @QueryParam("privilegeTypeCodes") List<String> privilegeTypeCodes)
+    {
+        return authorityService.getPrivilegesListByTypeCode(privilegeTypeCodes);
+    }
+
+    @GET
     @Path("/privileges/search/by-role/{roleCode}")
     public List<AuthorityDTO> searchPrivilegesByRoleCode(
             @PathParam("roleCode") String roleCode,

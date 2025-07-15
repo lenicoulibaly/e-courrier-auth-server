@@ -20,7 +20,6 @@ import java.util.List;
 @UniqueAuthName(groups = {UpdatPrvGroup.class, UpdateRolGroup.class, UpdatPrflGroup.class})
 public class AuthorityDTO implements Serializable
 {
-
     @NotNull(message = "Le code est obligatoire", groups = {CreateGroup.class, CreatePrvGroup.class})
     @NotBlank(message = "Le code est obligatoire", groups = {CreateGroup.class, CreatePrvGroup.class})
     @UniqueAuthCode(groups = {CreateGroup.class, CreatePrvGroup.class})
@@ -45,14 +44,14 @@ public class AuthorityDTO implements Serializable
     @UniqueAuthName(groups = {CreateGroup.class, CreatePrvGroup.class})
     String name;
     String description;
-    @ExistingTypeCode(groups = {CreateGroup.class, CreatePrvGroup.class})
-    @NotNull(message = "Le type est obligatoire", groups = {CreateGroup.class, CreatePrvGroup.class})
-    @NotBlank(message = "Le type est obligatoire", groups = {CreateGroup.class, CreatePrvGroup.class})
+    @ExistingTypeCode(groups = {CreateGroup.class})
+    @NotNull(message = "Le type est obligatoire")
+    @NotBlank(message = "Le type est obligatoire")
     String typeCode;
     String typeName;
     @ExistingPrivilegeTypeCode(groups = {CreatePrvGroup.class, UpdatPrvGroup.class})
-    @NotNull(message = "Le type de privilege est obligatoire", groups = {CreatePrvGroup.class})
-    @NotBlank(message = "Le type de privilege est obligatoire", groups = {CreatePrvGroup.class})
+    @NotNull(message = "Le type de privilege est obligatoire", groups = {CreatePrvGroup.class, UpdatPrvGroup.class})
+    @NotBlank(message = "Le type de privilege est obligatoire", groups = {CreatePrvGroup.class, UpdatPrvGroup.class})
     String privilegeTypeCode;
     String privilegeTypeName;
     List<AuthorityDTO> children;

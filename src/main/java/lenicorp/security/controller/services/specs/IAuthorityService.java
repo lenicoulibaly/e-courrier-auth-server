@@ -40,4 +40,6 @@ public interface IAuthorityService
 
     Page<AuthorityDTO> searchProfiles(String key, PageRequest pageRequest);
     Page<AuthorityDTO> searchProfilesByUserId(Long userId, String key, PageRequest pageRequest);
+
+    List<AuthorityDTO> getPrivilegesListByTypeCode(List<String> privilegeTypeCodes);
 }

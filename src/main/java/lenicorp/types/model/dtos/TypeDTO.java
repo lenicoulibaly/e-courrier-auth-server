@@ -2,9 +2,11 @@ package lenicorp.types.model.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lenicorp.utilities.validatorgroups.CreateGroup;
 import lenicorp.types.model.validators.ExistingGroupCode;
+import lenicorp.types.model.validators.ExistingTypeCode;
 import lenicorp.types.model.validators.UniqueTypeName;
+import lenicorp.utilities.validatorgroups.CreateGroup;
+import lenicorp.utilities.validatorgroups.SetSousTypeGroup;
 import lenicorp.utilities.validatorgroups.UpdateGroup;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,14 +23,16 @@ public class TypeDTO
 {
     @NotNull(message = "Le code est obligatoire")
     @NotBlank(message = "Le code est obligatoire")
+    @ExistingTypeCode(groups = {UpdateGroup.class, SetSousTypeGroup.class})
     private String code;
-    @NotNull(message = "Le nom est obligatoire") @NotNull(message = "Le nom est obligatoire")
+    @NotNull(message = "Le nom est obligatoire", groups = {CreateGroup.class, UpdateGroup.class})
+    @NotBlank(message = "Le nom est obligatoire", groups = {CreateGroup.class, UpdateGroup.class})
     @UniqueTypeName(groups = {CreateGroup.class})
     private String name;
     private int ordre;
-    @NotNull(message = "Le code du groupe est obligatoire")
-    @NotNull(message = "Le code du groupe est obligatoire")
-    @ExistingGroupCode
+    @NotNull(message = "Le code du groupe est obligatoire" , groups = {CreateGroup.class, UpdateGroup.class})
+    @NotBlank(message = "Le code du groupe est obligatoire", groups = {CreateGroup.class, UpdateGroup.class})
+    @ExistingGroupCode(groups = {CreateGroup.class, UpdateGroup.class})
     private String groupCode;
     private String description;
 

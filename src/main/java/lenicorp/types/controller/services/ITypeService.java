@@ -33,4 +33,6 @@ public interface ITypeService {
     List<TypeDTO> getPossibleSousTypes(String parentCode);
 
     List<TypeDTO> getTypesByGroupCode(String groupCode);
+
+    List<TypeGroupDTO> getAllTypeGroups();
 }

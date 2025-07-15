@@ -190,6 +190,12 @@ public class AuthorityService implements IAuthorityService
         return authAssoRepo.searchProfilesByUserId(userId, key, pageRequest);
     }
 
+    @Override
+    public List<AuthorityDTO> getPrivilegesListByTypeCode(List<String> privilegeTypeCodes)
+    {
+        return authAssoRepo.getPrivilegesListByTypeCode(privilegeTypeCodes);
+    }
+
     private void addPrivilegeToRole(String roleCode, String privilegeCode)
     {
         if( roleCode == null || privilegeCode == null ) return;

@@ -1,6 +1,6 @@
 package lenicorp.security.model.validators;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ExistingAuthCode.UniqueAuthCodeValidator.class})
+@Constraint(validatedBy = {ExistingAuthCode.ExistingAuthCodeValidator.class})
 @Documented
 @Repeatable(ExistingAuthCode.List.class) // Permet la répétition
 public @interface ExistingAuthCode
@@ -31,10 +31,11 @@ public @interface ExistingAuthCode
         ExistingAuthCode[] value();
     }
 
-    @ApplicationScoped @RequiredArgsConstructor
-    class UniqueAuthCodeValidator implements ConstraintValidator<ExistingAuthCode, String>
+
+    @RequiredArgsConstructor
+    class ExistingAuthCodeValidator implements ConstraintValidator<ExistingAuthCode, String>
     {
-        private final IAuthorityRepo authorityRepo;
+        //private final IAuthorityRepo authorityRepo;
         private boolean allowNull;
         private String authType;
 
@@ -48,7 +49,9 @@ public @interface ExistingAuthCode
         @Override
         public boolean isValid(String authCode, ConstraintValidatorContext context)
         {
+            //System.out.println("DEBUG: Validation avec authCode=" + authCode + " et authType=" + authType);
             if (authCode == null) return allowNull;
+            IAuthorityRepo authorityRepo = CDI.current().select(IAuthorityRepo.class).get();
             return authorityRepo.existsByCodeAndType(authCode, authType);
         }
     }

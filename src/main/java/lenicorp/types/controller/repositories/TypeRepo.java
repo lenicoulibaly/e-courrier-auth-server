@@ -39,13 +39,14 @@ public class TypeRepo implements PanacheRepositoryBase<Type, String>
 
     public List<TypeDTO> findDirectSousTypes(String parentCode)
     {
+        parentCode = parentCode == null ? "" : parentCode.toUpperCase();
         String query = """
                 select tm.child from TypeMapping tm
                 where tm.parent.code = :parentCode
             """;
         List<Type> types = getEntityManager()
                 .createQuery(query, Type.class)
-                .setParameter("parentCode", parentCode.toUpperCase())
+                .setParameter("parentCode", parentCode)
                 .getResultList();
 
         return types.stream()
