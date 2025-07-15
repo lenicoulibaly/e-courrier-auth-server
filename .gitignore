@@ -45,3 +45,6 @@ nb-configuration.xml
 .certs/
 /config/privateKey.pem
 /config/
+/src/main/resources/META-INF/resources/private.pem
+/src/main/resources/META-INF/resources/public.pem
+/qodana.yaml
