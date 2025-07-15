@@ -362,6 +362,47 @@ public class AuthAssoRepo implements IAuthAssoRepo
     }
 
     @Override
+    public List<AuthorityDTO> getPrivilegesListByRoleCodes(List<String> roleCodes)
+    {
+        String sql = """
+    select distinct vp.code, vp.name, vp.description, vp.privilege_type_code, vp.privilege_type_name
+    from v_privilege vp 
+    where true
+    """;
+
+        if(roleCodes != null && !roleCodes.isEmpty()) {
+            sql += """
+            and vp.code in (
+                select vrp.privilege_code 
+                from v_role_privilege vrp 
+                where vrp.role_code in (?1)
+            )
+            """;
+        }
+        sql += "   order by vp.name";
+
+        var sqlExecutor = getEntityManager().createNativeQuery(sql);
+        if(roleCodes != null && !roleCodes.isEmpty()) sqlExecutor.setParameter(1, roleCodes);
+
+        List<Object[]> results = sqlExecutor.getResultList();
+
+        // Utilisation du constructeur spécialisé avec authType "PRV"
+        List<AuthorityDTO> content = results.stream()
+                .map(row -> new AuthorityDTO(
+                        (String) row[0], // code
+                        (String) row[1], // name
+                        (String) row[2], // description
+                        "PRV", // typeCode
+                        "Privilège", // typeName
+                        (String) row[3], // privilegeTypeCode
+                        (String) row[4], // privilegeTypeName
+                        "PRV" // authType pour assigner privilegeCode
+                ))
+                .collect(Collectors.toList());
+        return content;
+    }
+
+    @Override
     public List<AuthorityDTO> searchPrivilegesByRoleCode(String roleCode, String key, List<String> privilegeTypeCodes)
     {
         key = "%" + StringUtils.stripAccentsToUpperCase( key ) + "%";

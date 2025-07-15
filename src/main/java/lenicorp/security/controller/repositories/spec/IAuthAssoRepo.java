@@ -44,6 +44,7 @@ public interface IAuthAssoRepo extends PanacheRepository<AuthAssociation>
     Page<AuthorityDTO> searchPrivileges(String key, List<String> privilegeTypeCodes, PageRequest pageRequest);
 
     List<AuthorityDTO> getPrivilegesListByTypeCode(List<String> privilegeTypeCodes);
+    List<AuthorityDTO> getPrivilegesListByRoleCodes(List<String> roleCodes);
     List<AuthorityDTO> searchPrivilegesByRoleCode(String roleCode, String key, List<String> privilegeTypeCodes);
 
     List<AuthorityDTO> searchPrivilegesByProfileCode(String profileCode, String key, List<String> privilegeTypeCodes);

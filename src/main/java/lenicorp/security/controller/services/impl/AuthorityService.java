@@ -93,7 +93,7 @@ public class AuthorityService implements IAuthorityService
         List<String> privilegeCodes = privilegeDtos.stream().map(AuthorityDTO::getCode).toList();
         List<AuthorityDTO> privilegesToAdd = authAssoRepo.findPrivilesToAddOnRole(roleCode, privilegeCodes);
         List<AuthorityDTO> privilegesToRemove = authAssoRepo.findPrivilesToRemoveOnRole(roleCode, privilegeCodes);
-        
+
         privilegesToAdd.forEach( privilegeDto ->addPrivilegeToRole(roleCode, privilegeDto.getCode()));
         privilegesToRemove.forEach( privilegeDto ->authAssoRepo.removePrivilegeToRole(roleCode, privilegeDto.getCode()));
         authorityDTO.setChildren(privilegesToAdd);
@@ -194,6 +194,12 @@ public class AuthorityService implements IAuthorityService
     public List<AuthorityDTO> getPrivilegesListByTypeCode(List<String> privilegeTypeCodes)
     {
         return authAssoRepo.getPrivilegesListByTypeCode(privilegeTypeCodes);
+    }
+
+    @Override
+    public List<AuthorityDTO> getPrivilegesListByRoleCodes(List<String> roleCodes)
+    {
+        return authAssoRepo.getPrivilegesListByRoleCodes(roleCodes);
     }
 
     private void addPrivilegeToRole(String roleCode, String privilegeCode)
