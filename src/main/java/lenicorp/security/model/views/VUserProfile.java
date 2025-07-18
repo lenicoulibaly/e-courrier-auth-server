@@ -23,7 +23,7 @@ public class VUserProfile
     private String firstName;
     private String lastName;
     private Boolean activated;
-    private Long strId;
+    private Long userStrId;
     private String tel;
     private String profileCode;
     private String profileName;
@@ -31,4 +31,11 @@ public class VUserProfile
     private String profileTypeName;
     private String assStatusCode;
     private String profileDescription;
+    private Long profileStrId;
+    private String profileStrName;
+    private String profileStrSigles;
+    private String profileStrChaineSigles;
+    private Long profileMaxAssignation;
+    private String userProfileAssTypeCode;
+    private String userProfileAssTypeName;
 }

@@ -57,6 +57,9 @@ public class AuthAssociation
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @ManyToOne @JoinColumn(name = "user_profile_ass_type_code")
+    private Type userProfileAssType; //Titulaire, Intérimaire
+
     public static AuthAssociation createRolPrvAss(String roleCode, String privilegeCode)
     {
         AuthAssociation authAssociation = new AuthAssociation();

@@ -1,5 +1,6 @@
 package lenicorp.structures.controller.web;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -22,13 +23,13 @@ public class StrController
 
     @GET
     @Path("/search")
+    @RolesAllowed("GET_STR")
     public Page<ReadStrDTO> search(@QueryParam("key") String key,
-                                   @QueryParam("parentId") Long parentId,
                                    @QueryParam("typeCode") String typeCode,
                                    @QueryParam("page") @DefaultValue("0") int page,
                                    @QueryParam("size") @DefaultValue("10") int size)
     {
-        return strService.searchStrs(key, parentId, typeCode, PageRequest.of(page, size));
+        return strService.searchStrs(key, typeCode, PageRequest.of(page, size));
     }
 
     @POST
@@ -79,4 +80,17 @@ public class StrController
     {
         return strService.getChangeAnchorDto(strId);
     }
-} 
+
+    /**
+     * Returns all structures under supervision of the current user's profile structure.
+     *
+     * @return List of structures under supervision
+     */
+    @GET
+    @Path("/user-visible-structures")
+    @RolesAllowed("GET_STR")
+    public List<ReadStrDTO> getUserVisibleStructures()
+    {
+        return strService.getUserVisibleStructures();
+    }
+}

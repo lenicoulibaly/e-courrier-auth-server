@@ -16,7 +16,7 @@ public interface IStrService
 
     ReadStrDTO changeAnchor(ChangeAnchorDTO dto);
 
-    Page<ReadStrDTO> searchStrs(String key, Long parentId, String typeCode, PageRequest pageRequest);
+    Page<ReadStrDTO> searchStrs(String key, String typeCode, PageRequest pageRequest);
 
     List<ReadStrDTO> getPossibleParentStructures(String childTypeCode);
     List<ReadStrDTO> getRootStructures();
@@ -24,4 +24,13 @@ public interface IStrService
 
     ChangeAnchorDTO getChangeAnchorDto(Long strId);
 
+    /**
+     * Returns all structures under supervision of the structure with the given ID,
+     * including all levels of the hierarchy down to the lowest level.
+     * @param parentStrId The ID of the parent structure
+     * @return List of structures under supervision
+     */
+    List<ReadStrDTO> findAllDescendants(Long parentStrId);
+
+    List<ReadStrDTO> getUserVisibleStructures();
 }

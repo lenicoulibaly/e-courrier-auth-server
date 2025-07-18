@@ -22,7 +22,7 @@ public class AuthAssoRepo implements IAuthAssoRepo
 {
     private final AuthorityMapper authorityMapper;
     @Override
-    public AuthorityDTO findUserCurrentProfile(String username)
+    public VUserProfile findUserCurrentProfile(String username)
     {
         String sql = "select vp from VUserProfile vp where vp.email = ?1 and vp.assStatusCode = 'STA_ASS_CUR'";
         VUserProfile profile = getEntityManager()
@@ -31,7 +31,7 @@ public class AuthAssoRepo implements IAuthAssoRepo
                 .getResultList().stream().findFirst().orElse(null);
 
         if(profile == null) return null;
-        return authorityMapper.mapToAuthorityDTO(profile);
+        return profile;
     }
 
     @Override
@@ -91,9 +91,9 @@ public class AuthAssoRepo implements IAuthAssoRepo
     @Override
     public Set<String> findAuthoritiesByUsername(String username)
     {
-        AuthorityDTO profile = findUserCurrentProfile(username);
+        VUserProfile profile = findUserCurrentProfile(username);
         if(profile == null) return Set.of();
-        return this.findAuthoritiesByProfileCode(profile.getCode());
+        return this.findAuthoritiesByProfileCode(profile.getProfileCode());
     }
 
     @Override
@@ -255,7 +255,7 @@ public class AuthAssoRepo implements IAuthAssoRepo
         String sql = """
         select count(vup) 
         from VUserProfile vup 
-        where vup.userId = :userId and vup.profileCode = :profileCode and vup.strId = :strId
+        where vup.userId = :userId and vup.profileCode = :profileCode and vup.userStrId = :strId
 
         """;
         Long count = this.getEntityManager().createQuery(sql, Long.class)

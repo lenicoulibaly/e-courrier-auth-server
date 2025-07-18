@@ -3,6 +3,7 @@ package lenicorp.types.controller.repositories;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
+import lenicorp.types.controller.repositories.spec.ITypeRepo;
 import lenicorp.types.model.dtos.TypeDTO;
 import lenicorp.types.model.entities.Type;
 import lenicorp.types.model.mappers.TypeMapper;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ApplicationScoped @RequiredArgsConstructor
-public class TypeRepo implements PanacheRepositoryBase<Type, String>
+public class TypeRepo implements ITypeRepo
 {
     private final TypeMapper typeMapper;
 

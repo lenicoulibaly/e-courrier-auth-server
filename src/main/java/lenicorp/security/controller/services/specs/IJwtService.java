@@ -2,6 +2,7 @@ package lenicorp.security.controller.services.specs;
 
 import lenicorp.security.model.dtos.AuthResponse;
 import lenicorp.security.model.entities.AppUser;
+import lenicorp.security.model.views.VUserProfile;
 
 public interface IJwtService
 {
@@ -9,4 +10,8 @@ public interface IJwtService
     String generateRefreshToken(AppUser user);
 
     AuthResponse getTokens(AppUser user);
+
+    AppUser getCurrentUser();
+
+    VUserProfile getCurrentUserProfile();
 }

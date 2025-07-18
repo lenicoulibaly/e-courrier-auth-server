@@ -6,7 +6,6 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 import lenicorp.security.controller.repositories.spec.IAuthorityRepo;
-import lombok.RequiredArgsConstructor;
 
 import java.lang.annotation.*;
 
@@ -32,7 +31,6 @@ public @interface ExistingAuthCode
     }
 
 
-    @RequiredArgsConstructor
     class ExistingAuthCodeValidator implements ConstraintValidator<ExistingAuthCode, String>
     {
         //private final IAuthorityRepo authorityRepo;

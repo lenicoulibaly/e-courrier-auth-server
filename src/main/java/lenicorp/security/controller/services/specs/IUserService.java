@@ -2,6 +2,7 @@ package lenicorp.security.controller.services.specs;
 
 import jakarta.transaction.Transactional;
 import lenicorp.security.model.dtos.AuthResponse;
+import lenicorp.security.model.dtos.CreateUserDTO;
 import lenicorp.security.model.dtos.UserDTO;
 import lenicorp.security.model.entities.AuthToken;
 import lenicorp.utilities.Page;
@@ -10,6 +11,8 @@ import lenicorp.utilities.PageRequest;
 public interface IUserService
 {
     UserDTO createUser(UserDTO user);
+
+    UserDTO createUserWithProfile(CreateUserDTO user);
 
     UserDTO updateUser(UserDTO user);
 
@@ -27,7 +30,7 @@ public interface IUserService
 
     void activateAccount(UserDTO user);
 
-    Page<UserDTO> searchUsers(String key, Long strId, PageRequest pageRequest);
+    Page<UserDTO> searchUsers(String key, PageRequest pageRequest);
 
     UserDTO findByUsername(String username);
 

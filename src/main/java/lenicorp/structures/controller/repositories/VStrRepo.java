@@ -1,6 +1,5 @@
 package lenicorp.structures.controller.repositories;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lenicorp.structures.model.dtos.ReadStrDTO;
@@ -14,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 @ApplicationScoped
-public class VStrRepo implements PanacheRepository<VStructure>
+public class VStrRepo implements IVStrRepo
 {
     @Inject private StrMapper strMapper;
 
@@ -25,7 +24,7 @@ public class VStrRepo implements PanacheRepository<VStructure>
         if (parentChaineSigles == null)  return Collections.emptyList();
 
         // Deuxième requête pour trouver tous les descendants
-        List<VStructure> descendants = find("chaineSigles like ?1 and strId != ?2 order by chaineSigles", parentChaineSigles + "/%", strId).list();
+        List<VStructure> descendants = find("chaineSigles like ?1 or strId = ?2 order by chaineSigles", parentChaineSigles + "/%", strId).list();
 
         return strMapper.mapToReadStrDTOList(descendants);
     }
@@ -53,7 +52,7 @@ public class VStrRepo implements PanacheRepository<VStructure>
 
         String countQuery = "select count(vs.strId) " + baseQuery;
         String selectQuery = "select vs " + baseQuery + " order by vs.chaineSigles";
-        
+
          var countQueryExecutor = getEntityManager().createQuery(countQuery, Long.class)
                 .setParameter("key", safeKey)
                 .setParameter("typeCode", typeCode);
@@ -71,4 +70,5 @@ public class VStrRepo implements PanacheRepository<VStructure>
 
         return new Page<>(readStrDTOList, totalEments, page, size);
     }
+
 }

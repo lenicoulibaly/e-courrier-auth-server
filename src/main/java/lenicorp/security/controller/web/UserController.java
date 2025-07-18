@@ -7,6 +7,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lenicorp.security.controller.services.specs.IUserService;
 import lenicorp.security.model.dtos.AuthResponse;
+import lenicorp.security.model.dtos.CreateUserDTO;
 import lenicorp.security.model.dtos.UserDTO;
 import lenicorp.utilities.Page;
 import lenicorp.utilities.PageRequest;
@@ -46,6 +47,16 @@ public class UserController
     public UserDTO createUser(@Valid @ConvertGroup(to = CreateGroup.class) UserDTO user)
     {
         return userService.createUser(user);
+    }
+
+    @POST
+    @Path("/create-with-profile")
+    @RolesAllowed("CRT_USR")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserDTO createUserWithProfile(@Valid @ConvertGroup(to = CreateGroup.class) CreateUserDTO user)
+    {
+        return userService.createUserWithProfile(user);
     }
 
     @PUT
@@ -123,8 +134,8 @@ public class UserController
     @GET
     @Path("/search")
     @Produces(MediaType.APPLICATION_JSON)
-    public Page<UserDTO> searchUsers(@QueryParam("key") String key, @QueryParam("strId") Long strId, @QueryParam("page") int page, @QueryParam("size") @DefaultValue("10") int size)
+    public Page<UserDTO> searchUsers(@QueryParam("key") String key, @QueryParam("page") int page, @QueryParam("size") @DefaultValue("10") int size)
     {
-        return userService.searchUsers(key, strId, PageRequest.of(page, size));
+        return userService.searchUsers(key, PageRequest.of(page, size));
     }
 }

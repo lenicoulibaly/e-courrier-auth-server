@@ -2,10 +2,9 @@ package lenicorp.security.model.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lenicorp.security.model.validators.ExistingAuthCode;
-import lenicorp.security.model.validators.ExistingUserId;
-import lenicorp.security.model.validators.UniqueUserProfileAssociation;
+import lenicorp.security.model.validators.*;
 import lenicorp.structures.model.validators.ExistingStrId;
+import lenicorp.types.model.validators.ExistingTypeCode;
 import lenicorp.utilities.validatorgroups.CreateGroup;
 import lenicorp.utilities.validatorgroups.UpdateGroup;
 import lombok.AllArgsConstructor;
@@ -13,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  * DTO for {@link lenicorp.security.model.entities.AuthAssociation}
@@ -22,6 +22,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NotNull
 @UniqueUserProfileAssociation(groups = {CreateGroup.class, UpdateGroup.class})
+@ProfileMaxAssignation(groups = {CreateGroup.class, UpdateGroup.class})
+@DateConsistencyValidator(groups = {CreateGroup.class, UpdateGroup.class})
+@EndingDateRequiredValidator(groups = {CreateGroup.class, UpdateGroup.class})
 public class UserProfileAssoDTO implements Serializable
 {
     Long id;
@@ -41,4 +44,8 @@ public class UserProfileAssoDTO implements Serializable
     @NotNull(message = "La structure est obligatoire")
     Long strId;
     String strName;
+    @ExistingTypeCode(message = "Type d'assignation inconnu", groups = {CreateGroup.class, UpdateGroup.class}, typeGroupCode = "USR_PRFL_TYPE")
+    String userProfileAssTypeCode;
+    LocalDate startingDate;
+    LocalDate endingDate;
 }

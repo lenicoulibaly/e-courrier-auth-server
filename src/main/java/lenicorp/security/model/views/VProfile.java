@@ -15,5 +15,7 @@ public class VProfile
     @Id
     private String code;
     private String name;
+    private String description;
+    private Long profileMaxAssignation;
     private String typeCode;
 }

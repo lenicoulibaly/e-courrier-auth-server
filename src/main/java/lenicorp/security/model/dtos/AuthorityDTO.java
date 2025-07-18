@@ -55,6 +55,7 @@ public class AuthorityDTO implements Serializable
     String privilegeTypeCode;
     String privilegeTypeName;
     List<AuthorityDTO> children;
+    Long profileMaxAssignation;
 
     public AuthorityDTO(String code, String name, String description, String typeCode, String typeName, String privilegeTypeCode, String privilegeTypeName)
     {

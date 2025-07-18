@@ -20,6 +20,7 @@ public class AppAuthority extends AuditableEntity
     private Type type;
     @ManyToOne @JoinColumn(name = "privilege_type_code") @NotAudited
     private Type privilegeType;
+    private Long profileMaxAssignation;
 
     public AppAuthority(String code)
     {

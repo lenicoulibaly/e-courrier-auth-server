@@ -3,8 +3,8 @@ package lenicorp.structures.controller.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import lenicorp.security.controller.services.specs.IJwtService;
 import lenicorp.structures.controller.repositories.IStrRepo;
-import lenicorp.structures.controller.repositories.StrRepo;
 import lenicorp.structures.controller.repositories.VStrRepo;
 import lenicorp.structures.model.dtos.ChangeAnchorDTO;
 import lenicorp.structures.model.dtos.CreateOrUpdateStrDTO;
@@ -22,6 +22,7 @@ public class StrService implements IStrService
     @Inject private VStrRepo vsRepo;
     @Inject private IStrRepo strRepo;
     @Inject private StrMapper strMapper;
+    @Inject private IJwtService jwtService;
 
     @Override @Transactional
     public ReadStrDTO createStr(CreateOrUpdateStrDTO dto)
@@ -51,9 +52,10 @@ public class StrService implements IStrService
     }
 
     @Override
-    public Page<ReadStrDTO> searchStrs(String key, Long parentId, String typeCode, PageRequest pageRequest)
+    public Page<ReadStrDTO> searchStrs(String key, String typeCode, PageRequest pageRequest)
     {
-        return vsRepo.search(key, parentId, typeCode, pageRequest);
+        Long profileStrId = jwtService.getCurrentUserProfile() != null ? jwtService.getCurrentUserProfile().getProfileStrId() : null;
+        return vsRepo.search(key, profileStrId, typeCode, pageRequest);
     }
 
     @Override
@@ -80,4 +82,16 @@ public class StrService implements IStrService
         return strRepo.getChangeAnchorDto(strId);
     }
 
+    @Override
+    public List<ReadStrDTO> findAllDescendants(Long parentStrId)
+    {
+        return vsRepo.findAllDescendants(parentStrId);
+    }
+
+    @Override
+    public List<ReadStrDTO> getUserVisibleStructures()
+    {
+        Long profileStrId = jwtService.getCurrentUserProfile() != null ? jwtService.getCurrentUserProfile().getProfileStrId() : null;
+        return vsRepo.findAllDescendants(profileStrId);
+    }
 }

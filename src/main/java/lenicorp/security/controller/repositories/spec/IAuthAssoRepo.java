@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lenicorp.security.model.dtos.AuthorityDTO;
 import lenicorp.security.model.entities.AuthAssociation;
 import lenicorp.security.model.validators.ExistingUserId;
+import lenicorp.security.model.views.VUserProfile;
 import lenicorp.utilities.Page;
 import lenicorp.utilities.PageRequest;
 
@@ -13,7 +14,7 @@ import java.util.Set;
 
 public interface IAuthAssoRepo extends PanacheRepository<AuthAssociation>
 {
-    AuthorityDTO findUserCurrentProfile(String username);
+    VUserProfile findUserCurrentProfile(String username);
     List<AuthorityDTO> findRolePrivileges(String roleCode);
     List<AuthorityDTO> findProfileRoles(String profileCode);
 

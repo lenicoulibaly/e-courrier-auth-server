@@ -1,16 +1,20 @@
 package lenicorp.security.controller.services.impl;
 
 import io.quarkus.elytron.security.common.BcryptUtil;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import lenicorp.exceptions.AppException;
 import lenicorp.notification.controller.services.MailServiceInterface;
 import lenicorp.security.controller.repositories.spec.IAuthTokenRepo;
 import lenicorp.security.controller.repositories.spec.IUserRepo;
+import lenicorp.security.controller.services.specs.IAuthorityService;
 import lenicorp.security.controller.services.specs.IJwtService;
 import lenicorp.security.controller.services.specs.IUserService;
 import lenicorp.security.model.dtos.AuthResponse;
+import lenicorp.security.model.dtos.CreateUserDTO;
 import lenicorp.security.model.dtos.UserDTO;
+import lenicorp.security.model.dtos.UserProfileAssoDTO;
 import lenicorp.security.model.entities.AppUser;
 import lenicorp.security.model.entities.AuthToken;
 import lenicorp.security.model.mappers.UserMapper;
@@ -29,6 +33,7 @@ public class UserService implements IUserService
     private final UserMapper userMapper;
     private final IAuthTokenRepo authTokenRepo;
     private final IJwtService jwtService;
+    private final IAuthorityService authorityService;
 
 
     @Override @Transactional
@@ -37,6 +42,27 @@ public class UserService implements IUserService
         AppUser user = userMapper.mapToAppUser(dto);
         userRepo.persist(user);
         sendActivationEmail(user.getUserId());
+        return userMapper.mapToUserDTO(user);
+    }
+
+    @Override @Transactional
+    public UserDTO createUserWithProfile(CreateUserDTO dto)
+    {
+        // Création de l'utilisateur
+        AppUser user = userMapper.mapToAppUser(dto);
+        userRepo.persist(user);
+
+        // Assignation du profil à l'utilisateur
+        if (dto.getProfileCode() != null) {
+            UserProfileAssoDTO profileAssoDTO = userMapper.mapToUserProfileAssoDTO(dto);
+            profileAssoDTO.setUserId(user.getUserId());
+
+            authorityService.addProfileToUser(profileAssoDTO);
+        }
+
+        // Envoi de l'email d'activation
+        sendActivationEmail(user.getUserId());
+
         return userMapper.mapToUserDTO(user);
     }
 
@@ -136,10 +162,12 @@ public class UserService implements IUserService
         invalidateAuthToken(dto.getAuthToken());
     }
 
-    @Override @Transactional
-    public Page<UserDTO> searchUsers(String key, Long strId, PageRequest pageRequest)
+    @Override @Transactional @RolesAllowed("GET_USR")
+    public Page<UserDTO> searchUsers(String key, PageRequest pageRequest)
     {
-        return userRepo.searchUsers(key, strId, pageRequest);
+        Long currentProfileStrId = jwtService.getCurrentUserProfile() == null ? null : jwtService.getCurrentUserProfile().getProfileStrId();
+        if(currentProfileStrId == null) return userRepo.searchUsers(key, null, pageRequest);
+        return userRepo.searchUsers(key, currentProfileStrId, pageRequest);
     }
 
     @Override
