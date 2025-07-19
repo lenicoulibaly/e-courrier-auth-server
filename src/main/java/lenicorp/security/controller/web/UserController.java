@@ -134,8 +134,8 @@ public class UserController
     @GET
     @Path("/search")
     @Produces(MediaType.APPLICATION_JSON)
-    public Page<UserDTO> searchUsers(@QueryParam("key") String key, @QueryParam("page") int page, @QueryParam("size") @DefaultValue("10") int size)
+    public Page<UserDTO> searchUsers(@QueryParam("key") String key, @QueryParam("strId") Long strId, @QueryParam("page") int page, @QueryParam("size") @DefaultValue("10") int size)
     {
-        return userService.searchUsers(key, PageRequest.of(page, size));
+        return userService.searchUsers(key, strId, PageRequest.of(page, size));
     }
 }

@@ -56,4 +56,8 @@ public class VUserProfile
     @Column(name = "ending_date")
     private LocalDate endingDate;
 
+    @Size(max = 255)
+    @Column(name = "association_type")
+    private String associationType;
+
 }

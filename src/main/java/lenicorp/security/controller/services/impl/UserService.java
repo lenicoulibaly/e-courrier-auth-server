@@ -163,9 +163,12 @@ public class UserService implements IUserService
     }
 
     @Override @Transactional @RolesAllowed("GET_USR")
-    public Page<UserDTO> searchUsers(String key, PageRequest pageRequest)
+    public Page<UserDTO> searchUsers(String key, Long strId, PageRequest pageRequest)
     {
         Long currentProfileStrId = jwtService.getCurrentUserProfile() == null ? null : jwtService.getCurrentUserProfile().getProfileStrId();
+        if(strId != null) {
+            return userRepo.searchUsers(key, strId, pageRequest);
+        }
         if(currentProfileStrId == null) return userRepo.searchUsers(key, null, pageRequest);
         return userRepo.searchUsers(key, currentProfileStrId, pageRequest);
     }

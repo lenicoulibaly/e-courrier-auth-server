@@ -30,7 +30,7 @@ public interface IUserService
 
     void activateAccount(UserDTO user);
 
-    Page<UserDTO> searchUsers(String key, PageRequest pageRequest);
+    Page<UserDTO> searchUsers(String key, Long strId, PageRequest pageRequest);
 
     UserDTO findByUsername(String username);
 
