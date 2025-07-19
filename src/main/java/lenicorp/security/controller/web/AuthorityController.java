@@ -8,6 +8,7 @@ import jakarta.ws.rs.core.MediaType;
 import lenicorp.security.controller.services.specs.IAuthorityService;
 import lenicorp.security.model.dtos.AuthorityDTO;
 import lenicorp.security.model.dtos.UserProfileAssoDTO;
+import lenicorp.security.model.views.VProfile;
 import lenicorp.utilities.Page;
 import lenicorp.utilities.PageRequest;
 import lenicorp.utilities.validatorgroups.*;
@@ -86,6 +87,18 @@ public class AuthorityController
     public void addProfileToUser(@Valid @ConvertGroup(to = CreateGroup.class)UserProfileAssoDTO dto)
     {
         authorityService.addProfileToUser(dto);
+    }
+
+    /**
+     * Update a user profile assignment
+     * @param dto The DTO containing the updated information
+     * @return The updated UserProfileAssoDTO
+     */
+    @PUT
+    @Path("/update-user-profile")
+    public UserProfileAssoDTO updateUserProfileAssignment(@Valid @ConvertGroup(to = UpdateGroup.class)UserProfileAssoDTO dto)
+    {
+        return authorityService.updateUserProfileAssignment(dto);
     }
 
     // Endpoints pour la recherche des privilèges
@@ -176,5 +189,37 @@ public class AuthorityController
             @QueryParam("size") @DefaultValue("10") int size)
     {
         return authorityService.searchProfilesByUserId(userId, key, new PageRequest(page, size));
+    }
+
+    /**
+     * Get all profiles as VProfile entities
+     * @return List of all profiles
+     */
+    @GET
+    @Path("/profiles/all")
+    public List<VProfile> getAllProfiles()
+    {
+        return authorityService.getAllProfiles();
+    }
+
+    /**
+     * Search for user profile assignments with pagination and multiple criteria
+     * @param userId Optional user ID filter
+     * @param profileCode Optional profile code filter
+     * @param key Search term for name, email, etc.
+     * @param page Page number (0-based)
+     * @param size Page size
+     * @return Page of UserProfileAssoDTO objects
+     */
+    @GET
+    @Path("/user-profiles/search/{userId}")
+    public Page<UserProfileAssoDTO> searchUserProfileAssignments(
+            @PathParam("userId") Long userId,
+            @QueryParam("profileCode") String profileCode,
+            @QueryParam("key") @DefaultValue("") String key,
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("size") @DefaultValue("10") int size)
+    {
+        return authorityService.searchUserProfileAssignations(userId, profileCode, key, new PageRequest(page, size));
     }
 }

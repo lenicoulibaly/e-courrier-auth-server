@@ -1,12 +1,16 @@
 package lenicorp.security.model.views;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -38,4 +42,18 @@ public class VUserProfile
     private Long profileMaxAssignation;
     private String userProfileAssTypeCode;
     private String userProfileAssTypeName;
+
+    @Size(max = 255)
+    @Column(name = "libelle")
+    private String libelle;
+
+    @Column(name = "ass_id")
+    private Long assId;
+
+    @Column(name = "starting_date")
+    private LocalDate startingDate;
+
+    @Column(name = "ending_date")
+    private LocalDate endingDate;
+
 }

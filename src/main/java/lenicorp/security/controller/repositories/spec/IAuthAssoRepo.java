@@ -3,6 +3,7 @@ package lenicorp.security.controller.repositories.spec;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.validation.constraints.NotNull;
 import lenicorp.security.model.dtos.AuthorityDTO;
+import lenicorp.security.model.dtos.UserProfileAssoDTO;
 import lenicorp.security.model.entities.AuthAssociation;
 import lenicorp.security.model.validators.ExistingUserId;
 import lenicorp.security.model.views.VUserProfile;
@@ -57,4 +58,14 @@ public interface IAuthAssoRepo extends PanacheRepository<AuthAssociation>
     Page<AuthorityDTO> searchProfiles(String key, PageRequest pageRequest);
 
     Page<AuthorityDTO> searchProfilesByUserId(Long userId, String key, PageRequest pageRequest);
+
+    /**
+     * Search for user profile assignments with pagination and multiple criteria
+     * @param userId Optional user ID filter
+     * @param profileCode Optional profile code filter
+     * @param key Search term for name, email, etc.
+     * @param pageRequest Pagination parameters
+     * @return Page of UserProfileAssoDTO objects
+     */
+    Page<UserProfileAssoDTO> searchUserProfileAssignments(Long userId, String profileCode, String key, PageRequest pageRequest);
 }

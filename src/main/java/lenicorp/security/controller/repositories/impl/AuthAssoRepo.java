@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import lenicorp.security.controller.repositories.spec.IAuthAssoRepo;
 import lenicorp.security.model.dtos.AuthorityDTO;
+import lenicorp.security.model.dtos.UserProfileAssoDTO;
 import lenicorp.security.model.entities.AppAuthority;
 import lenicorp.security.model.mappers.AuthorityMapper;
 import lenicorp.security.model.views.VUserProfile;
@@ -13,6 +14,7 @@ import lenicorp.utilities.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.transform.AliasToBeanResultTransformer;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -601,7 +603,7 @@ public class AuthAssoRepo implements IAuthAssoRepo
         String baseQuery = """
     from v_user_profile vup 
     where vup.user_id = coalesce(?1, vup.user_id) 
-    and vup.ass_status_code <> 'STA_ASS_INACT'
+
     and (upper(unaccent(vup.profile_name)) like ?2 or upper(unaccent(vup.profile_code)) like ?2 or upper(unaccent(vup.profile_description)) like ?2)
     """;
 
@@ -632,6 +634,84 @@ public class AuthAssoRepo implements IAuthAssoRepo
                         (String) row[4], // profile_type_name
                         "PRFL" // authType pour assigner profileCode
                 ))
+                .collect(Collectors.toList());
+
+        return new Page<>(content, count, page, size);
+    }
+
+    @Override
+    public Page<UserProfileAssoDTO> searchUserProfileAssignments(Long userId, String profileCode, String key, PageRequest pageRequest)
+    {
+        int page = pageRequest.getPage();
+        int size = pageRequest.getSize();
+        key = "%" + StringUtils.stripAccentsToUpperCase(key) + "%";
+
+        String baseQuery = """
+    from v_user_profile vup 
+    where vup.user_id = coalesce(?1, vup.user_id) 
+    and vup.profile_code = coalesce(?2, vup.profile_code)
+    and (
+        upper(unaccent(vup.profile_name)) like ?3 
+        or upper(unaccent(vup.profile_code)) like ?3 
+        or upper(unaccent(vup.email)) like ?3
+        or upper(unaccent(vup.first_name)) like ?3
+        or upper(unaccent(vup.last_name)) like ?3
+        or upper(unaccent(vup.profile_str_name)) like ?3
+    )
+    """;
+
+        String selectQuery = """
+    select vup.ass_id, vup.user_id, vup.email, vup.first_name, vup.last_name, 
+    vup.profile_code, vup.profile_name, vup.profile_description,
+    vup.profile_str_id, vup.profile_str_name, vup.user_profile_ass_type_code, 
+    vup.user_profile_ass_type_name, vup.libelle, vup.starting_date, vup.ending_date,
+    vup.ass_staus_code, vup.ass_status_name, vup.ordre
+    """ + baseQuery + " order by vup.ordre, vup.profile_name";
+
+        String countQuery = "select count(*) " + baseQuery;
+
+        var selectQueryExecutor = getEntityManager().createNativeQuery(selectQuery);
+        var countQueryExecutor = getEntityManager().createNativeQuery(countQuery, Long.class);
+
+        Long count = (Long) countQueryExecutor
+                .setParameter(1, userId)
+                .setParameter(2, profileCode)
+                .setParameter(3, key)
+                .getSingleResult();
+
+        List<Object[]> results = selectQueryExecutor
+                .setParameter(1, userId)
+                .setParameter(2, profileCode)
+                .setParameter(3, key)
+                .setFirstResult(page * size)
+                .setMaxResults(size)
+                .getResultList();
+
+        // Map results to UserProfileAssoDTO objects
+        List<UserProfileAssoDTO> content = results.stream()
+                .map(row -> {
+                    UserProfileAssoDTO dto = new UserProfileAssoDTO();
+                    dto.setId((Long) row[0]);
+                    dto.setUserId((Long) row[1]);
+                    dto.setEmail((String) row[2]);
+                    // Combine first and last name for display
+
+                    dto.setProfileCode((String) row[5]);
+                    dto.setProfileName((String) row[6]);
+                    // Skip profile description as it's not in UserProfileAssoDTO
+
+                    dto.setStrId((Long) row[8]);
+                    dto.setStrName((String) row[9]);
+                    dto.setUserProfileAssTypeCode((String) row[10]);
+                    dto.setUserProfileAssTypeName((String) row[11]);
+                    dto.setLibelle((String) row[12]);
+                    dto.setStartingDate(LocalDate.parse((String) row[13]));
+                    dto.setEndingDate(LocalDate.parse((String) row[14]));
+                    dto.setAssStatusCode((String) row[15]);
+                    dto.setAssStatusName((String) row[16]);
+                    dto.setOrdre((Long) row[17]);
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
         return new Page<>(content, count, page, size);

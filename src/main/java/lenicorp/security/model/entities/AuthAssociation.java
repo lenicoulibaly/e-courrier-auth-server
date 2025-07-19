@@ -5,6 +5,7 @@ import lenicorp.structures.model.entities.Structure;
 import lenicorp.types.model.entities.Type;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -59,6 +60,8 @@ public class AuthAssociation
 
     @ManyToOne @JoinColumn(name = "user_profile_ass_type_code")
     private Type userProfileAssType; //Titulaire, Intérimaire
+    private LocalDate startingDate;
+    private LocalDate endingDate;
 
     public static AuthAssociation createRolPrvAss(String roleCode, String privilegeCode)
     {

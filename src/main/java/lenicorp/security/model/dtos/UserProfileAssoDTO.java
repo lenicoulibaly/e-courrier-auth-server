@@ -3,6 +3,7 @@ package lenicorp.security.model.dtos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lenicorp.security.model.validators.*;
+import lenicorp.security.model.validators.ExistingAuthAssoId;
 import lenicorp.structures.model.validators.ExistingStrId;
 import lenicorp.types.model.validators.ExistingTypeCode;
 import lenicorp.utilities.validatorgroups.CreateGroup;
@@ -27,6 +28,7 @@ import java.time.LocalDate;
 @EndingDateRequiredValidator(groups = {CreateGroup.class, UpdateGroup.class})
 public class UserProfileAssoDTO implements Serializable
 {
+    @ExistingAuthAssoId(message = "L'association n'existe pas ou n'est pas de type USR_PRFL", groups = {UpdateGroup.class})
     Long id;
     private String libelle;
     String typeCode;
@@ -46,6 +48,10 @@ public class UserProfileAssoDTO implements Serializable
     String strName;
     @ExistingTypeCode(message = "Type d'assignation inconnu", groups = {CreateGroup.class, UpdateGroup.class}, typeGroupCode = "USR_PRFL_TYPE")
     String userProfileAssTypeCode;
+    String userProfileAssTypeName;
     LocalDate startingDate;
     LocalDate endingDate;
+    String assStatusCode;
+    String assStatusName;
+    Long ordre;
 }

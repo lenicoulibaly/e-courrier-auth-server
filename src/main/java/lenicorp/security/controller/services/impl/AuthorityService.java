@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import lenicorp.exceptions.AppException;
 import lenicorp.security.controller.repositories.spec.IAuthAssoRepo;
 import lenicorp.security.controller.repositories.spec.IAuthorityRepo;
+import lenicorp.security.controller.repositories.spec.IVProfileRepo;
 import lenicorp.security.controller.services.specs.IAuthorityService;
 import lenicorp.security.model.dtos.AuthorityDTO;
 import lenicorp.security.model.dtos.UserProfileAssoDTO;
@@ -12,6 +13,7 @@ import lenicorp.security.model.entities.AppAuthority;
 import lenicorp.security.model.entities.AuthAssociation;
 import lenicorp.security.model.mappers.AuthAssoMapper;
 import lenicorp.security.model.mappers.AuthorityMapper;
+import lenicorp.security.model.views.VProfile;
 import lenicorp.types.model.entities.Type;
 import lenicorp.utilities.Page;
 import lenicorp.utilities.PageRequest;
@@ -28,6 +30,7 @@ public class AuthorityService implements IAuthorityService
     private final AuthAssoMapper authAssoMapper;
     private final IAuthorityRepo authorityRepo;
     private final IAuthAssoRepo authAssoRepo;
+    private final IVProfileRepo vProfileRepo;
 
     @Override
     public Set<String> getAuthoritiesByUsername(String username)
@@ -200,6 +203,43 @@ public class AuthorityService implements IAuthorityService
     public List<AuthorityDTO> getPrivilegesListByRoleCodes(List<String> roleCodes)
     {
         return authAssoRepo.getPrivilegesListByRoleCodes(roleCodes);
+    }
+
+    @Override
+    public List<VProfile> getAllProfiles()
+    {
+        return vProfileRepo.findAll().list();
+    }
+
+    @Override
+    public Page<UserProfileAssoDTO> searchUserProfileAssignations(Long userId, String profileCode, String key, PageRequest pageRequest)
+    {
+        return authAssoRepo.searchUserProfileAssignments(userId, profileCode, key, pageRequest);
+    }
+
+    @Override
+    @Transactional
+    public UserProfileAssoDTO updateUserProfileAssignment(UserProfileAssoDTO dto)
+    {
+        // Find the existing association
+        AuthAssociation association = authAssoRepo.findById(dto.getId());
+        if (association == null) {
+            throw new AppException("L'association avec ID " + dto.getId() + " n'existe pas");
+        }
+
+        // Verify that the association has type.code="USR_PRFL"
+        if (association.getType() == null || !"USR_PRFL".equals(association.getType().code)) {
+            throw new AppException("L'association avec ID " + dto.getId() + " n'est pas de type USR_PRFL");
+        }
+
+        // Update the entity with values from the DTO
+        association = authAssoMapper.partialUpdate(dto, association);
+
+        // Persist the updated entity
+        authAssoRepo.persist(association);
+
+        // Return the updated DTO
+        return authAssoMapper.toDto(association);
     }
 
     private void addPrivilegeToRole(String roleCode, String privilegeCode)
