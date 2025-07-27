@@ -21,8 +21,10 @@ import lenicorp.security.model.mappers.UserMapper;
 import lenicorp.utilities.Page;
 import lenicorp.utilities.PageRequest;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @ApplicationScoped @RequiredArgsConstructor
@@ -34,6 +36,8 @@ public class UserService implements IUserService
     private final IAuthTokenRepo authTokenRepo;
     private final IJwtService jwtService;
     private final IAuthorityService authorityService;
+    @ConfigProperty(name = "front.adress")
+    private String frontAddress;
 
 
     @Override @Transactional
@@ -80,8 +84,8 @@ public class UserService implements IUserService
     {
         AppUser user = userRepo.findById(dto.getUserId());
         String oldPassword = user.getPassword();
-        if (!BcryptUtil.matches(dto.getOldPassword(), oldPassword)) throw new AppException("L'ancien mot de passe est incorrect");
-        if (BcryptUtil.matches(dto.getPassword(), oldPassword)) throw new AppException("Le nouveau mot de passe doit être différent de l'ancien");
+        if (oldPassword != null && !BcryptUtil.matches(dto.getOldPassword(), oldPassword)) throw new AppException("L'ancien mot de passe est incorrect");
+        if (oldPassword != null && BcryptUtil.matches(dto.getPassword(), oldPassword)) throw new AppException("Le nouveau mot de passe doit être différent de l'ancien");
         user.setPassword(BcryptUtil.bcryptHash(dto.getPassword(), 12));
         userRepo.persist(user);
     }
@@ -129,12 +133,20 @@ public class UserService implements IUserService
         AuthToken authToken = this.generateAuthToken(userId);
         AppUser user = userRepo.findById(userId);
         if(user == null) return;
-        mailService.envoyerEmailReinitialisation(user.getEmail(), user.getLastName(), "/reset-password?token=" + authToken.getToken()).exceptionally(throwable ->
+        mailService.envoyerEmailReinitialisation(user.getEmail(), user.getLastName(), frontAddress + "/reset-password-form?userId=" + userId + "&token=" + authToken.getToken()).exceptionally(throwable ->
         {
             throwable.printStackTrace();
             throw new AppException(throwable.getMessage());
         });
         authToken.setEmailSent(true);
+    }
+
+    @Override @Transactional
+    public void sendResetPasswordEmail(String email)
+    {
+        AppUser user = userRepo.findByUsername(email);
+        if(user == null) throw new AppException("Aucun utilisateur trouvé avec cet email: " + email);
+        sendResetPasswordEmail(user.getUserId());
     }
 
     @Override @Transactional
@@ -171,6 +183,18 @@ public class UserService implements IUserService
         }
         if(currentProfileStrId == null) return userRepo.searchUsers(key, null, pageRequest);
         return userRepo.searchUsers(key, currentProfileStrId, pageRequest);
+    }
+
+    @Override @Transactional @RolesAllowed("GET_USR")
+    public List<UserDTO> getVisibleUsers()
+    {
+        Long currentProfileStrId = jwtService.getCurrentUserProfile() == null ? null : jwtService.getCurrentUserProfile().getProfileStrId();
+        if(currentProfileStrId == null) {
+            // If no current profile, return empty list
+            return List.of();
+        }
+        // Get all users belonging to the current profile's structure
+        return userRepo.getUsersByStructure(currentProfileStrId);
     }
 
     @Override

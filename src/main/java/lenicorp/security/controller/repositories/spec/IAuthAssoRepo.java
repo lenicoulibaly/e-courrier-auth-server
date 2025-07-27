@@ -62,10 +62,18 @@ public interface IAuthAssoRepo extends PanacheRepository<AuthAssociation>
     /**
      * Search for user profile assignments with pagination and multiple criteria
      * @param userId Optional user ID filter
+     * @param strId Optional structure ID filter to filter profiles by structure chain sigle
      * @param profileCode Optional profile code filter
      * @param key Search term for name, email, etc.
      * @param pageRequest Pagination parameters
      * @return Page of UserProfileAssoDTO objects
      */
-    Page<UserProfileAssoDTO> searchUserProfileAssignments(Long userId, String profileCode, String key, PageRequest pageRequest);
+    Page<UserProfileAssoDTO> searchUserProfileAssignments(Long userId, Long strId, String profileCode, String key, PageRequest pageRequest);
+
+    /**
+     * Find active and current profiles for a specific user
+     * @param userId The user ID
+     * @return List of UserProfileAssoDTO objects representing active and current profiles
+     */
+    List<UserProfileAssoDTO> findActiveAndCurrentProfilesByUserId(Long userId);
 }

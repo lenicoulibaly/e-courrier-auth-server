@@ -8,6 +8,8 @@ import lenicorp.security.model.entities.AuthToken;
 import lenicorp.utilities.Page;
 import lenicorp.utilities.PageRequest;
 
+import java.util.List;
+
 public interface IUserService
 {
     UserDTO createUser(UserDTO user);
@@ -26,11 +28,15 @@ public interface IUserService
 
     void sendResetPasswordEmail(Long userId);
 
+    void sendResetPasswordEmail(String email);
+
     void sendActivationEmail(Long userId);
 
     void activateAccount(UserDTO user);
 
     Page<UserDTO> searchUsers(String key, Long strId, PageRequest pageRequest);
+
+    List<UserDTO> getVisibleUsers();
 
     UserDTO findByUsername(String username);
 

@@ -14,4 +14,6 @@ public interface IJwtService
     AppUser getCurrentUser();
 
     VUserProfile getCurrentUserProfile();
+
+    Long getCurrentUserProfileStrId();
 }

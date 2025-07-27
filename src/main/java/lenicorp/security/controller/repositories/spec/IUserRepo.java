@@ -6,6 +6,8 @@ import lenicorp.security.model.entities.AppUser;
 import lenicorp.utilities.Page;
 import lenicorp.utilities.PageRequest;
 
+import java.util.List;
+
 public interface IUserRepo extends PanacheRepository<AppUser>
 {
     AppUser findByUsername(String username);
@@ -13,6 +15,7 @@ public interface IUserRepo extends PanacheRepository<AppUser>
     boolean existsByEmail(String email);
     boolean existsByEmail(String email, Long userId);
     Page<UserDTO> searchUsers(String key, Long strId, PageRequest pageRequest);
+    List<UserDTO> getUsersByStructure(Long strId);
     boolean existsByTel(String tel, Long userId);
     boolean existsByTel(String tel);
     boolean userIsActive(Long userId);

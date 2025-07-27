@@ -6,6 +6,7 @@ import jakarta.validation.groups.ConvertGroup;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lenicorp.security.controller.services.specs.IAuthorityService;
+import lenicorp.security.model.dtos.AuthResponse;
 import lenicorp.security.model.dtos.AuthorityDTO;
 import lenicorp.security.model.dtos.UserProfileAssoDTO;
 import lenicorp.security.model.views.VProfile;
@@ -99,6 +100,40 @@ public class AuthorityController
     public UserProfileAssoDTO updateUserProfileAssignment(@Valid @ConvertGroup(to = UpdateGroup.class)UserProfileAssoDTO dto)
     {
         return authorityService.updateUserProfileAssignment(dto);
+    }
+
+    /**
+     * Revoke a profile assignment by setting its status to inactive
+     * @param id The ID of the AuthAssociation to revoke
+     */
+    @PUT
+    @Path("/revoke-profile-assignment/{id}")
+    public void revokeProfileAssignment(@PathParam("id") Long id)
+    {
+        authorityService.revokeProfileAssignment(id);
+    }
+
+    /**
+     * Restore a revoked profile assignment by setting its status to active
+     * @param id The ID of the AuthAssociation to restore
+     */
+    @PUT
+    @Path("/restore-profile-assignment/{id}")
+    public void restoreProfileAssignment(@PathParam("id") Long id)
+    {
+        authorityService.restoreProfileAssignment(id);
+    }
+
+    /**
+     * Change the default profile for a user
+     * @param id The ID of the AuthAssociation to set as default
+     */
+    @PUT
+    @Path("/change-default-profile/{id}")
+    public AuthResponse changeDefaultProfile(@PathParam("id") Long id)
+    {
+        AuthResponse response = authorityService.changeDefaultProfile(id);;
+        return response;
     }
 
     // Endpoints pour la recherche des privilèges
@@ -205,6 +240,7 @@ public class AuthorityController
     /**
      * Search for user profile assignments with pagination and multiple criteria
      * @param userId Optional user ID filter
+     * @param strId Optional structure ID filter to filter profiles by structure chain sigle
      * @param profileCode Optional profile code filter
      * @param key Search term for name, email, etc.
      * @param page Page number (0-based)
@@ -212,14 +248,28 @@ public class AuthorityController
      * @return Page of UserProfileAssoDTO objects
      */
     @GET
-    @Path("/user-profiles/search/{userId}")
+    @Path("/user-profiles/search")
     public Page<UserProfileAssoDTO> searchUserProfileAssignments(
-            @PathParam("userId") Long userId,
+            @QueryParam("userId") Long userId,
+            @QueryParam("strId") Long strId,
             @QueryParam("profileCode") String profileCode,
             @QueryParam("key") @DefaultValue("") String key,
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("size") @DefaultValue("10") int size)
     {
-        return authorityService.searchUserProfileAssignations(userId, profileCode, key, new PageRequest(page, size));
+        return authorityService.searchUserProfileAssignations(userId, strId, profileCode, key, new PageRequest(page, size));
+    }
+
+    /**
+     * Find active and current profiles for a specific user
+     * @param userId The user ID
+     * @return List of UserProfileAssoDTO objects representing active and current profiles
+     */
+    @GET
+    @Path("/user-profiles/active/{userId}")
+    public List<UserProfileAssoDTO> findActiveAndCurrentProfilesByUserId(
+            @PathParam("userId") Long userId)
+    {
+        return authorityService.findActiveAndCurrentProfilesByUserId(userId);
     }
 }

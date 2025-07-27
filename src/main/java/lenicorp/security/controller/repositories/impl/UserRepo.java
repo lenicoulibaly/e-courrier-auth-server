@@ -140,6 +140,44 @@ public class UserRepo implements IUserRepo
                 .orElse(null);
     }
 
+    @Override
+    public List<UserDTO> getUsersByStructure(Long strId)
+    {
+        if (strId == null) {
+            return List.of();
+        }
+
+        String baseQuery = """
+            FROM app_user u
+            LEFT JOIN v_structure str ON str.str_id = u.str_id
+            WHERE 1=1
+            """;
+
+        String selectQuery = """
+            SELECT u.user_id, u.email, u.first_name, u.last_name, u.tel, 
+                   u.change_password_date, u.activated, u.not_blocked, u.last_login,
+                   str.str_id, str.str_name, str.str_sigle, str.chaine_sigles
+            """ + baseQuery;
+
+        var chaineSigles = vStrRepo.getChaineSigles(strId);
+
+        if (chaineSigles != null) {
+            selectQuery += " AND str.chaine_sigles LIKE :chaineSigles";
+        } else {
+            return List.of();
+        }
+
+        selectQuery = selectQuery + " ORDER BY u.last_name, u.first_name";
+
+        var selectQueryExecutor = getEntityManager().createNativeQuery(selectQuery);
+        selectQueryExecutor.setParameter("chaineSigles", chaineSigles + "%");
+
+        List<Object[]> results = selectQueryExecutor.getResultList();
+        return results.stream()
+                .map(this::mapToUserDTO)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     private UserDTO mapToUserDTO(Object[] row)
     {
         return new UserDTO(
@@ -158,6 +196,6 @@ public class UserRepo implements IUserRepo
                 (String) row[12]         // chaineSigles
         );
     }
-    
-    
+
+
 }

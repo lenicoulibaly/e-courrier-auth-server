@@ -15,6 +15,7 @@ public interface AuthAssoMapper
     @Mapping(source = "email", target = "user.email")
     @Mapping(source = "userId", target = "user.userId")
     @Mapping(expression = "java(mapToType(\"USR_PRFL\"))", target = "type")
+    @Mapping(source = "userProfileAssTypeCode", target = "userProfileAssType.code")
     AuthAssociation toEntity(UserProfileAssoDTO userProfileAssoDTO);
 
     @InheritInverseConfiguration(name = "toEntity")

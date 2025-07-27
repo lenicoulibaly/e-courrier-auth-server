@@ -28,12 +28,12 @@ public class UserDTO
     @NotBlockedUser(groups = {ChangePasswordGroup.class, ResetPasswordGroup.class})
     private Long userId;
     @Column(unique = true, nullable = false)
-    @NotNull(message = "L'email de l'utilisateur ne peut pas être nul", groups = {CreateGroup.class, LoginGroup.class})
+    @NotNull(message = "L'email de l'utilisateur ne peut pas être nul", groups = {CreateGroup.class, LoginGroup.class, SendResetPasswordEmailGroup.class})
     @UniqueEmail(message = "L'email est déjà utilisé", groups = {CreateGroup.class})
     @Email(message = "L'email est invalide", groups = {CreateGroup.class, UpdateGroup.class})
     @ActiveUser(groups = {LoginGroup.class})
     @NotBlockedUser(groups = {LoginGroup.class})
-    @ExistingEmail(allowNull = true, groups = {LoginGroup.class})
+    @ExistingEmail(allowNull = true, groups = {LoginGroup.class, SendResetPasswordEmailGroup.class})
     private String email;
     @NotNull(message = "Le prénom ne peut pas être nul")
     private String firstName;

@@ -22,8 +22,6 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@UniqueEmail(message = "L'email est déjà utilisé", groups = {CreateGroup.class})
-@UniqueTel(message = "Le numéro de téléphone est déjà utilisé", groups = {CreateGroup.class})
 @NotNull(message = "Les données de l'utilisateur ne peuvent pas être nulles")
 @CreateUserDateValidator(groups = {CreateGroup.class})
 @ProfileMaxAssignation(groups = {CreateGroup.class})

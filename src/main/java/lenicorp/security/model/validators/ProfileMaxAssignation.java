@@ -11,6 +11,7 @@ import lenicorp.security.model.dtos.UserProfileAssoDTO;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.annotation.*;
+import java.util.Objects;
 
 @Target({ElementType.FIELD, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -45,7 +46,7 @@ public @interface ProfileMaxAssignation {
             Long maxAssignation = entityManager.createQuery(maxAssignationQuery, Long.class)
                     .setParameter("profileCode", dto.getProfileCode())
                     .getResultList()
-                    .stream()
+                    .stream().filter(Objects::nonNull)
                     .findFirst()
                     .orElse(0L);
 
@@ -95,7 +96,7 @@ public @interface ProfileMaxAssignation {
             Long maxAssignation = entityManager.createQuery(maxAssignationQuery, Long.class)
                     .setParameter("profileCode", dto.getProfileCode())
                     .getResultList()
-                    .stream()
+                    .stream().filter(Objects::nonNull)
                     .findFirst()
                     .orElse(0L);
 

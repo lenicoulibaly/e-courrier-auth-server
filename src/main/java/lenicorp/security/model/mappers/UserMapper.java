@@ -5,6 +5,8 @@ import lenicorp.security.model.dtos.CreateUserDTO;
 import lenicorp.security.model.dtos.UserDTO;
 import lenicorp.security.model.dtos.UserProfileAssoDTO;
 import lenicorp.security.model.entities.AppUser;
+import lenicorp.security.model.views.VProfile;
+import lenicorp.security.model.views.VUserProfile;
 import lenicorp.structures.controller.repositories.VStrRepo;
 import lenicorp.structures.model.entities.Structure;
 import org.mapstruct.*;
@@ -117,4 +119,36 @@ public abstract class UserMapper
     @Mapping(target = "strName", ignore = true)
     @Mapping(target = "userProfileAssTypeCode", source = "userProfileAssTypeCode")
     public abstract UserProfileAssoDTO mapToUserProfileAssoDTO(CreateUserDTO createUserDTO);
+
+    /**
+     * Mapping de AppUser et VProfile vers VUserProfile
+     * Cette méthode crée un objet VUserProfile à partir d'un AppUser et d'un VProfile
+     */
+    @Mapping(target = "rowNum", ignore = true) // L'ID sera généré automatiquement
+    @Mapping(target = "userId", source = "appUser.userId")
+    @Mapping(target = "email", source = "appUser.email")
+    @Mapping(target = "firstName", source = "appUser.firstName")
+    @Mapping(target = "lastName", source = "appUser.lastName")
+    @Mapping(target = "activated", source = "appUser.activated")
+    @Mapping(target = "userStrId", source = "appUser.structure.strId")
+    @Mapping(target = "tel", source = "appUser.tel")
+    @Mapping(target = "profileCode", source = "vProfile.code")
+    @Mapping(target = "profileName", source = "vProfile.name")
+    @Mapping(target = "profileDescription", source = "vProfile.description")
+    @Mapping(target = "profileTypeCode", source = "vProfile.typeCode")
+    @Mapping(target = "profileMaxAssignation", source = "vProfile.profileMaxAssignation")
+    @Mapping(target = "assId", ignore = true)
+    @Mapping(target = "startingDate", ignore = true)
+    @Mapping(target = "endingDate", ignore = true)
+    @Mapping(target = "associationType", ignore = true)
+    @Mapping(target = "assStatusCode", ignore = true)
+    @Mapping(target = "profileTypeName", ignore = true)
+    @Mapping(target = "profileStrId", source = "appUser.structure.strId")
+    @Mapping(target = "profileStrName", source = "appUser.structure.strName")
+    @Mapping(target = "profileStrSigles", source = "appUser.structure.strSigle")
+    @Mapping(target = "profileStrChaineSigles", source = "appUser.structure.strId", qualifiedByName = "mapChaineSigles")
+    @Mapping(target = "userProfileAssTypeCode", ignore = true)
+    @Mapping(target = "userProfileAssTypeName", ignore = true)
+    @Mapping(target = "libelle", ignore = true)
+    public abstract VUserProfile mapToVUserProfile(AppUser appUser, VProfile vProfile);
 }

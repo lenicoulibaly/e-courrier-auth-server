@@ -3,10 +3,13 @@ package lenicorp.security.controller.services.impl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import lenicorp.exceptions.AppException;
+import lenicorp.security.controller.repositories.impl.UserRepo;
 import lenicorp.security.controller.repositories.spec.IAuthAssoRepo;
 import lenicorp.security.controller.repositories.spec.IAuthorityRepo;
 import lenicorp.security.controller.repositories.spec.IVProfileRepo;
 import lenicorp.security.controller.services.specs.IAuthorityService;
+import lenicorp.security.controller.services.specs.IJwtService;
+import lenicorp.security.model.dtos.AuthResponse;
 import lenicorp.security.model.dtos.AuthorityDTO;
 import lenicorp.security.model.dtos.UserProfileAssoDTO;
 import lenicorp.security.model.entities.AppAuthority;
@@ -31,6 +34,8 @@ public class AuthorityService implements IAuthorityService
     private final IAuthorityRepo authorityRepo;
     private final IAuthAssoRepo authAssoRepo;
     private final IVProfileRepo vProfileRepo;
+    private final IJwtService jwtService;
+    private final UserRepo userRepo;
 
     @Override
     public Set<String> getAuthoritiesByUsername(String username)
@@ -148,6 +153,7 @@ public class AuthorityService implements IAuthorityService
         AuthAssociation association = authAssoMapper.toEntity(dto);
         authAssoRepo.persist(association);
         if(!authAssoRepo.userHasAnyProfile(dto.getUserId()))association.setAssStatus(new Type("STA_ASS_CUR"));
+        else association.setAssStatus(new Type("STA_ASS_ACT"));
         authAssoRepo.persist(association);
     }
 
@@ -212,9 +218,18 @@ public class AuthorityService implements IAuthorityService
     }
 
     @Override
-    public Page<UserProfileAssoDTO> searchUserProfileAssignations(Long userId, String profileCode, String key, PageRequest pageRequest)
+    public Page<UserProfileAssoDTO> searchUserProfileAssignations(Long userId, Long strId, String profileCode, String key, PageRequest pageRequest)
     {
-        return authAssoRepo.searchUserProfileAssignments(userId, profileCode, key, pageRequest);
+        Long currentProfileStrId = jwtService.getCurrentUserProfileStrId();
+        if(strId == null) strId = currentProfileStrId;
+        return authAssoRepo.searchUserProfileAssignments(userId, strId, profileCode, key, pageRequest);
+    }
+
+    @Override
+    public List<UserProfileAssoDTO> findActiveAndCurrentProfilesByUserId(Long userId)
+    {
+        if(userId == null) throw new AppException("L'identifiant de l'utilisateur est obligatoire");
+        return authAssoRepo.findActiveAndCurrentProfilesByUserId(userId);
     }
 
     @Override
@@ -261,5 +276,89 @@ public class AuthorityService implements IAuthorityService
         if(authAssoRepo.existsByProfileCodeAndRoleCode(profileCode, roleCode)) return;
         AuthAssociation association = AuthAssociation.createPrflRolAss(profileCode, roleCode);
         authAssoRepo.persist(association);
+    }
+
+    @Override
+    @Transactional
+    public void revokeProfileAssignment(Long id) {
+        // Find the existing association
+        AuthAssociation association = authAssoRepo.findById(id);
+        if (association == null) {
+            throw new AppException("L'association avec ID " + id + " n'existe pas");
+        }
+
+        // Verify that the association has type.code="USR_PRFL"
+        if (association.getType() == null || !"USR_PRFL".equals(association.getType().code)) {
+            throw new AppException("L'association avec ID " + id + " n'est pas de type USR_PRFL");
+        }
+
+        // Set the status to inactive
+        association.setAssStatus(new Type("STA_ASS_INACT"));
+
+        // Persist the updated entity
+        authAssoRepo.persist(association);
+    }
+
+    @Override
+    @Transactional
+    public void restoreProfileAssignment(Long id) {
+        // Find the existing association
+        AuthAssociation association = authAssoRepo.findById(id);
+        if (association == null) {
+            throw new AppException("L'association avec ID " + id + " n'existe pas");
+        }
+
+        // Verify that the association has type.code="USR_PRFL"
+        if (association.getType() == null || !"USR_PRFL".equals(association.getType().code)) {
+            throw new AppException("L'association avec ID " + id + " n'est pas de type USR_PRFL");
+        }
+
+        // Verify that the association is currently inactive
+        if (association.getAssStatus() == null || !"STA_ASS_INACT".equals(association.getAssStatus().code)) {
+            throw new AppException("L'association avec ID " + id + " n'est pas dans un état inactif");
+        }
+
+        // Set the status to active
+        association.setAssStatus(new Type("STA_ASS_ACT"));
+
+        // Persist the updated entity
+        authAssoRepo.persist(association);
+    }
+
+    @Override
+    @Transactional
+    public AuthResponse changeDefaultProfile(Long id)
+    {
+        // Find the association to set as default
+        AuthAssociation newDefaultAssociation = authAssoRepo.findById(id);
+        if (newDefaultAssociation == null) {
+            throw new AppException("L'association avec ID " + id + " n'existe pas");
+        }
+
+        // Verify that the association has type.code="USR_PRFL"
+        if (newDefaultAssociation.getType() == null || !"USR_PRFL".equals(newDefaultAssociation.getType().code)) {
+            throw new AppException("L'association avec ID " + id + " n'est pas de type USR_PRFL");
+        }
+
+        // Get the user ID from the association
+        Long userId = newDefaultAssociation.getUser().getUserId();
+
+        // Find the current default association for this user
+        // We need to use a native query to find the association with status STA_ASS_CUR for this user
+        List<AuthAssociation> currentDefaultAssociations = authAssoRepo.find(
+            "user.userId = ?1 AND assStatus.code = 'STA_ASS_CUR'", 
+            userId
+        ).list();
+
+        // Update the current default association to active
+        for (AuthAssociation currentDefault : currentDefaultAssociations) {
+            currentDefault.setAssStatus(new Type("STA_ASS_ACT"));
+            authAssoRepo.persist(currentDefault);
+        }
+
+        // Set the new association as default
+        newDefaultAssociation.setAssStatus(new Type("STA_ASS_CUR"));
+        authAssoRepo.persist(newDefaultAssociation);
+        return jwtService.getTokens(userRepo.findById(userId));
     }
 }

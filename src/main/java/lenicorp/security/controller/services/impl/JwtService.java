@@ -122,4 +122,12 @@ public class JwtService implements IJwtService
         }
         return null;
     }
+
+    @Override
+    public Long getCurrentUserProfileStrId()
+    {
+        if (securityIdentity == null || securityIdentity.isAnonymous()) return null;
+        VUserProfile userProfile = getCurrentUserProfile();
+        return userProfile == null ? null : userProfile.getProfileStrId();
+    }
 }

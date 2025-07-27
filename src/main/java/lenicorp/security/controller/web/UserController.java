@@ -131,11 +131,28 @@ public class UserController
         userService.sendResetPasswordEmail(userId);
     }
 
+    @POST
+    @Path("/open/send-reset-password-email")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void envoyerEmailReinitialisation( @Valid @ConvertGroup(to = SendResetPasswordEmailGroup.class) UserDTO dto)
+    {
+        userService.sendResetPasswordEmail(dto.getEmail());
+    }
+
     @GET
     @Path("/search")
     @Produces(MediaType.APPLICATION_JSON)
     public Page<UserDTO> searchUsers(@QueryParam("key") String key, @QueryParam("strId") Long strId, @QueryParam("page") int page, @QueryParam("size") @DefaultValue("10") int size)
     {
         return userService.searchUsers(key, strId, PageRequest.of(page, size));
+    }
+
+    @GET
+    @Path("/list/visible")
+    @RolesAllowed("GET_USR")
+    @Produces(MediaType.APPLICATION_JSON)
+    public java.util.List<UserDTO> getVisibleUsers()
+    {
+        return userService.getVisibleUsers();
     }
 }

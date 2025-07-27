@@ -54,4 +54,6 @@ public class UserProfileAssoDTO implements Serializable
     String assStatusCode;
     String assStatusName;
     Long ordre;
+    String firstName;
+    String lastName;
 }
