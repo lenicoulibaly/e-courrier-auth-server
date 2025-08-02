@@ -41,7 +41,7 @@ public class VStrRepo implements IVStrRepo
         int page = pageRequest.getPage();
         int size = pageRequest.getSize();
         String parentChaineSigles = parentId == null ? null : getChaineSigles(parentId);
-
+        typeCode = typeCode == null ? null : typeCode.equals("") ? null : typeCode;
         String baseQuery = """
                 from VStructure vs 
                 where 

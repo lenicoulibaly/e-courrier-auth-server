@@ -61,7 +61,25 @@ public class StrService implements IStrService
     @Override
     public List<ReadStrDTO> getPossibleParentStructures(String childTypeCode)
     {
-        return strRepo.getPossibleParentStructures(childTypeCode);
+        // Get the current user profile
+        var userProfile = jwtService.getCurrentUserProfile();
+        // Get the list of possible parent structures
+        List<ReadStrDTO> possibleParents = strRepo.getPossibleParentStructures(childTypeCode);
+
+        // If user profile is null or profileStrChaineSigles is null, return all possible parents
+        if (userProfile == null || userProfile.getProfileStrChaineSigles() == null) {
+            return possibleParents;
+        }
+
+        // Get the user's chain of sigles
+        String userChaineSigles = userProfile.getProfileStrChaineSigles();
+
+        // Filter the structures based on the user's chain of sigles
+        return possibleParents.stream()
+                .filter(str -> str.getChaineSigles() != null && 
+                              (str.getChaineSigles().equals(userChaineSigles) || 
+                               str.getChaineSigles().startsWith(userChaineSigles + "/")))
+                .toList();
     }
 
     @Override

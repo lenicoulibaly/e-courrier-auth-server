@@ -7,13 +7,14 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 import lenicorp.types.controller.repositories.spec.ITypeRepo;
+import lenicorp.types.model.dtos.TypeDTO;
 import lenicorp.utilities.StringUtils;
 
 import java.lang.annotation.*;
 
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ExistingTypeCode.Validator.class)
+@Constraint(validatedBy = {ExistingTypeCode.Validator.class, ExistingTypeCode.ExistingTypeCodeValidator.class})
 @Documented
 public @interface ExistingTypeCode 
 {
@@ -27,22 +28,42 @@ public @interface ExistingTypeCode
     class Validator implements ConstraintValidator<ExistingTypeCode, String> 
     {
         private boolean allowNull;
-        private String typeGroupCode;
 
         @Override
         public void initialize(ExistingTypeCode constraintAnnotation) 
         {
             this.allowNull = constraintAnnotation.allowNull();
-            this.typeGroupCode = constraintAnnotation.typeGroupCode();
         }
 
         @Override
-        public boolean isValid(String code, ConstraintValidatorContext context) 
+        public boolean isValid(String code, ConstraintValidatorContext context)
         {
             ITypeRepo typeRepo = CDI.current().select(ITypeRepo.class).get();
             if (StringUtils.isBlank(code)) return allowNull;
-            if(typeGroupCode.equals("")) return typeRepo.existsByCode(code.toUpperCase());
-            return typeRepo.existsByCodeAndGroupCode(code.toUpperCase(), typeGroupCode);
+            return typeRepo.existsByCode(code.toUpperCase());
+        }
+    }
+
+    @ApplicationScoped
+    class ExistingTypeCodeValidator implements ConstraintValidator<ExistingTypeCode, TypeDTO>
+    {
+        private boolean allowNull;
+
+        @Override
+        public void initialize(ExistingTypeCode constraintAnnotation)
+        {
+            this.allowNull = constraintAnnotation.allowNull();
+        }
+
+        @Override
+        public boolean isValid(TypeDTO dto, ConstraintValidatorContext context)
+        {
+            String code = dto.getCode();
+            String groupCode = dto.getGroupCode();
+            ITypeRepo typeRepo = CDI.current().select(ITypeRepo.class).get();
+            if (StringUtils.isBlank(code)) return allowNull;
+            if(groupCode.equals("")) return typeRepo.existsByCode(code.toUpperCase());
+            return typeRepo.existsByCodeAndGroupCode(code.toUpperCase(), groupCode);
         }
     }
 }

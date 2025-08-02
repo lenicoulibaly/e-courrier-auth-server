@@ -5,11 +5,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lenicorp.exceptions.AppException;
+import lenicorp.security.controller.services.specs.IJwtService;
+import lenicorp.structures.controller.repositories.VStrRepo;
+import lenicorp.structures.model.entities.VStructure;
 import lenicorp.types.controller.repositories.TypeGroupRepo;
 import lenicorp.types.controller.repositories.TypeMappingRepo;
 import lenicorp.types.controller.repositories.TypeRepo;
-import lenicorp.utilities.Page;
-import lenicorp.utilities.PageRequest;
 import lenicorp.types.model.dtos.TypeDTO;
 import lenicorp.types.model.dtos.TypeGroupDTO;
 import lenicorp.types.model.entities.Type;
@@ -17,6 +18,8 @@ import lenicorp.types.model.entities.TypeGroup;
 import lenicorp.types.model.entities.TypeMapping;
 import lenicorp.types.model.mappers.TypeGroupMapper;
 import lenicorp.types.model.mappers.TypeMapper;
+import lenicorp.utilities.Page;
+import lenicorp.utilities.PageRequest;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +39,10 @@ public class TypeService implements ITypeService
     private TypeMapper typeMapper;
     @Inject
     private TypeGroupMapper typeGroupMapper;
+    @Inject
+    private IJwtService jwtService;
+    @Inject
+    private VStrRepo vStrRepo;
 
     @Override
     @Transactional
@@ -179,6 +186,19 @@ public class TypeService implements ITypeService
     @Override
     public List<TypeDTO> getTypesByGroupCode(String groupCode)
     {
+        if ("STR".equals(groupCode))
+        {
+            Long userProfileStrId = jwtService.getCurrentUserProfileStrId();
+            if (userProfileStrId != null)
+            {
+                VStructure structure = vStrRepo.find("strId", userProfileStrId).firstResult();
+                if (structure != null)
+                {
+                    String typeCode = structure.getStrTypeCode();
+                    return getPossibleSousTypes(typeCode);
+                }
+            }
+        }
         return typeRepo.findByGroupCode(groupCode);
     }
 

@@ -16,27 +16,31 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @NotNull(message = "Aucune donnée parvenue")
 @UniqueTypeName(groups = {UpdateGroup.class})
+@ExistingTypeCode(groups = {UpdateGroup.class, SetSousTypeGroup.class})
 public class TypeDTO
 {
     @NotNull(message = "Le code est obligatoire")
     @NotBlank(message = "Le code est obligatoire")
-    @ExistingTypeCode(groups = {UpdateGroup.class, SetSousTypeGroup.class})
     private String code;
     @NotNull(message = "Le nom est obligatoire", groups = {CreateGroup.class, UpdateGroup.class})
     @NotBlank(message = "Le nom est obligatoire", groups = {CreateGroup.class, UpdateGroup.class})
     @UniqueTypeName(groups = {CreateGroup.class})
     private String name;
     private int ordre;
-    @NotNull(message = "Le code du groupe est obligatoire" , groups = {CreateGroup.class, UpdateGroup.class})
+    @NotNull(message = "Le code du groupe est obligatoire", groups = {CreateGroup.class, UpdateGroup.class})
     @NotBlank(message = "Le code du groupe est obligatoire", groups = {CreateGroup.class, UpdateGroup.class})
     @ExistingGroupCode(groups = {CreateGroup.class, UpdateGroup.class})
     private String groupCode;
     private String description;
 
-    public TypeDTO(String code, String name, int ordre, String groupCode, String description) {
+    public TypeDTO(String code, String name, int ordre, String groupCode, String description)
+    {
         this.code = code;
         this.name = name;
         this.ordre = ordre;

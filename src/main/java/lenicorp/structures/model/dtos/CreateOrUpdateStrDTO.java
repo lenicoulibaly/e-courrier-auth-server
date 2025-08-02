@@ -6,8 +6,8 @@ import lenicorp.structures.model.validators.CompatibleTypeAndStrParent;
 import lenicorp.structures.model.validators.ExistingStrId;
 import lenicorp.structures.model.validators.UniqueSigleUnderSameParent;
 import lenicorp.structures.model.validators.UniqueStrNameUnderSameParent;
+import lenicorp.types.model.validators.ExistingStrTypeCode;
 import lenicorp.utilities.validatorgroups.CreateGroup;
-import lenicorp.types.model.validators.ExistingTypeCode;
 import lenicorp.utilities.validatorgroups.UpdateGroup;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,7 +32,7 @@ public class CreateOrUpdateStrDTO
     @NotNull(message = "Le sigle de la structure ne peut être nul")
     private String strSigle;
     @NotNull(message = "Le type de la structure ne peut être nul")
-    @ExistingTypeCode
+    @ExistingStrTypeCode
     private String typeCode;
     @ExistingStrId(allowNull = true)
     private Long parentId;
