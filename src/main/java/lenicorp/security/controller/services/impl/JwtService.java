@@ -1,10 +1,10 @@
 
 package lenicorp.security.controller.services.impl;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import io.smallrye.jwt.build.Jwt;
-import jakarta.inject.Inject;
 import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.jwt.build.Jwt;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import lenicorp.exceptions.AppException;
 import lenicorp.security.controller.repositories.impl.UserRepo;
 import lenicorp.security.controller.repositories.spec.IAuthAssoRepo;
@@ -14,9 +14,12 @@ import lenicorp.security.model.entities.AppUser;
 import lenicorp.security.model.views.VUserProfile;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+import jakarta.annotation.Priority;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 
 @ApplicationScoped @RequiredArgsConstructor
 public class JwtService implements IJwtService
@@ -28,6 +31,9 @@ public class JwtService implements IJwtService
 
     @Inject
     SecurityIdentity securityIdentity;
+
+    @Inject
+    JsonWebToken jwt;
 
     @ConfigProperty(name = "jwt.access-token-duration", defaultValue = "3600")
     private long accessTokenDuration;
@@ -63,6 +69,7 @@ public class JwtService implements IJwtService
                 .claim("profileStrName", userProfile.getProfileStrName())
                 .claim("profileStrSigles", userProfile.getProfileStrSigles())
                 .claim("profileStrChaineSigles", userProfile.getProfileStrChaineSigles())
+                .claim("connexionId", UUID.randomUUID().toString())
                 .sign();
     }
 
@@ -129,5 +136,38 @@ public class JwtService implements IJwtService
         if (securityIdentity == null || securityIdentity.isAnonymous()) return null;
         VUserProfile userProfile = getCurrentUserProfile();
         return userProfile == null ? null : userProfile.getProfileStrId();
+    }
+
+    @Override
+    public Object getClaimFromToken(String claimName)
+    {
+        if (securityIdentity == null || securityIdentity.isAnonymous()) return null;
+
+        try {
+            // Use the injected JsonWebToken to get the claim
+            if (jwt != null) {
+                return jwt.getClaim(claimName);
+            }
+            return null;
+        } catch (Exception e) {
+            // Log the exception if needed
+            return null;
+        }
+    }
+
+    @Override
+    public String getCurrentToken()
+    {
+        if (securityIdentity == null || securityIdentity.isAnonymous()) return null;
+
+        try {
+            // Use the injected JsonWebToken to get the raw token
+            if (jwt != null) {
+                return jwt.getRawToken();
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

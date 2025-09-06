@@ -141,6 +141,18 @@ public class UserRepo implements IUserRepo
     }
 
     @Override
+    public boolean existsByMatricule(String matricule)
+    {
+        return count("SELECT COUNT(u) FROM AppUser u WHERE u.matricule = ?1", matricule) > 0;
+    }
+
+    @Override
+    public boolean existsByMatricule(String matricule, Long userId)
+    {
+        return count("SELECT COUNT(u) FROM AppUser u WHERE u.matricule = ?1 AND u.userId <> ?2", matricule, userId) > 0;
+    }
+
+    @Override
     public List<UserDTO> getUsersByStructure(Long strId)
     {
         if (strId == null) {

@@ -88,15 +88,8 @@ public class TypeController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response setSousTypes(@Valid @ConvertGroup(to = SetSousTypeGroup.class) TypeDTO dto)
     {
-        try {
-            typeService.setSousTypes(dto);
-            return Response.ok().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", e.getMessage()))
-                    .build();
-        }
+        typeService.setSousTypes(dto);
+        return Response.ok().build();
     }
 
     @GET

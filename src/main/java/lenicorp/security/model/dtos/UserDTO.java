@@ -1,12 +1,15 @@
 package lenicorp.security.model.dtos;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lenicorp.security.model.validators.*;
 import lenicorp.structures.model.validators.ExistingStrId;
+import lenicorp.types.model.validators.ExistingGradeCode;
 import lenicorp.utilities.validatorgroups.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +38,11 @@ public class UserDTO
     @NotBlockedUser(groups = {LoginGroup.class})
     @ExistingEmail(allowNull = true, groups = {LoginGroup.class, SendResetPasswordEmailGroup.class})
     private String email;
+    //@NotNull(message = "Le matricule de l'utilisateur ne peut pas être nul", groups = {CreateGroup.class})
+    @UniqueMatricule
+    private String matricule;
+    @ExistingGradeCode(message = "Grade inconnu", groups = {CreateGroup.class, UpdateGroup.class}, allowNull = true)
+    private String gradeCode;
     @NotNull(message = "Le prénom ne peut pas être nul")
     private String firstName;
     @NotNull(message = "Le nom de famille ne peut pas être nul")

@@ -5,11 +5,15 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.vertx.ext.web.RoutingContext;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @RequestScoped @Unremovable
 public class AuditService
 {
     @Inject SecurityIdentity securityIdentity;
+
+    @Inject
+    JsonWebToken jwt;
 
     @Inject
     RoutingContext routingContext; // ✅ Fonctionne avec Quarkus
@@ -23,6 +27,15 @@ public class AuditService
         return "ANONYMOUS";
     }
 
+    public String getCurrentConnexionId()
+    {
+        if (securityIdentity != null && !securityIdentity.isAnonymous() && jwt != null)
+        {
+            return jwt.getClaim("connexionId");
+        }
+        return "";
+    }
+
     public String getCurrentIpAddress()
     {
         try
@@ -33,7 +46,7 @@ public class AuditService
             }
         } catch (Exception e)
         {
-            // Log si nécessaire
+            e.printStackTrace();
         }
         return "LOCALHOST";
     }

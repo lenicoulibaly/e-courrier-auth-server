@@ -23,4 +23,6 @@ public interface IUserRepo extends PanacheRepository<AppUser>
     boolean userIsNotBlocked(Long userId);
     boolean userIsNotBlocked(String username);
     String getPasswordByUsername(String username);
+    boolean existsByMatricule(String matricule);
+    boolean existsByMatricule(String matricule, Long userId);
 }

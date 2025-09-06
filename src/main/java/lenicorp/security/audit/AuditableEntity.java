@@ -25,19 +25,26 @@ public class AuditableEntity
     protected LocalDateTime updatedAt;
     @Column(name = "updated_by", length = 50)
     protected String updatedBy;
+    protected String ipAddress;
 
     @PrePersist
     protected void onCreate()
     {
         this.createdAt = LocalDateTime.now();
         this.createdBy = getCurrentUser();
+        this.updatedAt = this.createdAt;
+        this.updatedBy = this.createdBy;
+        this.connexionId = this.getCurrentConnexionId();
+        this.ipAddress = this.getIpAddress();
     }
 
     @PreUpdate
     protected void onUpdate()
     {
-        this.updatedAt = LocalDateTime.now();
-        this.updatedBy = getCurrentUser();
+        this.updatedAt = this.createdAt;
+        this.updatedBy = this.createdBy;
+        this.connexionId = this.getCurrentConnexionId();
+        this.ipAddress = this.getIpAddress();
     }
 
     public AuditableEntity(String actionName, String actionId, String connexionId)
@@ -47,6 +54,25 @@ public class AuditableEntity
         this.connexionId = connexionId;
     }
 
+    private String getIpAddress()
+    {
+        var auditService = CDI.current().select(AuditService.class);
+        if (!auditService.isUnsatisfied())
+        {
+            return auditService.get().getCurrentIpAddress();
+        }
+        return "LOCALHOST";
+    }
+
+    private String getCurrentConnexionId()
+    {
+        var auditService = CDI.current().select(AuditService.class);
+        if (!auditService.isUnsatisfied())
+        {
+            return auditService.get().getCurrentConnexionId();
+        }
+        return "";
+    }
     private String getCurrentUser()
     {
         try

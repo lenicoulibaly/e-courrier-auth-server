@@ -2,14 +2,12 @@ package lenicorp.security.model.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import lenicorp.security.model.validators.CreateUserDateValidator;
-import lenicorp.security.model.validators.ExistingAuthCode;
-import lenicorp.security.model.validators.ProfileMaxAssignation;
-import lenicorp.security.model.validators.UniqueEmail;
-import lenicorp.security.model.validators.UniqueTel;
+import lenicorp.security.model.validators.*;
 import lenicorp.structures.model.validators.ExistingStrId;
+import lenicorp.types.model.validators.ExistingGradeCode;
 import lenicorp.types.model.validators.ExistingTypeCode;
 import lenicorp.utilities.validatorgroups.CreateGroup;
+import lenicorp.utilities.validatorgroups.UpdateGroup;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +23,7 @@ import java.time.LocalDate;
 @NotNull(message = "Les données de l'utilisateur ne peuvent pas être nulles")
 @CreateUserDateValidator(groups = {CreateGroup.class})
 @ProfileMaxAssignation(groups = {CreateGroup.class})
+@UniqueMatricule(groups = {UpdateGroup.class})
 public class CreateUserDTO
 {
     @NotNull(message = "L'email de l'utilisateur ne peut pas être nul", groups = {CreateGroup.class})
@@ -41,6 +40,10 @@ public class CreateUserDTO
     @NotNull(message = "Le numéro de téléphone ne peut pas être nul", groups = {CreateGroup.class})
     @UniqueTel(message = "Le numéro de téléphone est déjà utilisé", groups = {CreateGroup.class})
     private String tel;
+    @UniqueMatricule(groups = {CreateGroup.class})
+    private String matricule;
+    @ExistingGradeCode(message = "Grade inconnu", groups = {CreateGroup.class, UpdateGroup.class}, allowNull = true)
+    private String gradeCode;
 
     @ExistingStrId(allowNull = false, groups = {CreateGroup.class})
     @NotNull(message = "La structure est obligatoire")

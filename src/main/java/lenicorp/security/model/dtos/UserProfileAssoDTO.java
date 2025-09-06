@@ -3,8 +3,8 @@ package lenicorp.security.model.dtos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lenicorp.security.model.validators.*;
-import lenicorp.security.model.validators.ExistingAuthAssoId;
 import lenicorp.structures.model.validators.ExistingStrId;
+import lenicorp.types.model.validators.ExistingGradeCode;
 import lenicorp.types.model.validators.ExistingTypeCode;
 import lenicorp.utilities.validatorgroups.CreateGroup;
 import lenicorp.utilities.validatorgroups.UpdateGroup;
@@ -26,6 +26,7 @@ import java.time.LocalDate;
 @ProfileMaxAssignation(groups = {CreateGroup.class, UpdateGroup.class})
 @DateConsistencyValidator(groups = {CreateGroup.class, UpdateGroup.class})
 @EndingDateRequiredValidator(groups = {CreateGroup.class, UpdateGroup.class})
+@UniqueMatricule(groups = {UpdateGroup.class})
 public class UserProfileAssoDTO implements Serializable
 {
     @ExistingAuthAssoId(message = "L'association n'existe pas ou n'est pas de type USR_PRFL", groups = {UpdateGroup.class})
@@ -37,6 +38,10 @@ public class UserProfileAssoDTO implements Serializable
     @NotNull(message = "L'utilisateur est obligatoire")
     Long userId;
     String email;
+    @UniqueMatricule(groups = {CreateGroup.class})
+    String matricule;
+    @ExistingGradeCode(message = "Grade inconnu", groups = {CreateGroup.class, UpdateGroup.class}, allowNull = true)
+    String gradeCode;
     @ExistingAuthCode(authType = "PRFL")
     @NotNull(message = "Le profil est obligatoire")
     @NotBlank(message = "Le profil est obligatoire")
