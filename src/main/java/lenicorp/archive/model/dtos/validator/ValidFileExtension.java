@@ -1,7 +1,6 @@
 package lenicorp.archive.model.dtos.validator;
 
 import jakarta.inject.Inject;
-import jakarta.servlet.http.Part;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -19,7 +18,7 @@ import java.lang.annotation.*;
 
 @Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ValidFileExtension.ValidFileExtensionValidator.class,
+@Constraint(validatedBy = {
         ValidFileExtension.ValidFileExtensionValidatorOnDTO.class, ValidFileExtension.ValidFileExtensionValidatorOnBase64Url.class})
 @Documented
 public @interface ValidFileExtension
@@ -28,23 +27,7 @@ public @interface ValidFileExtension
     Class<?> [] groups() default {};
     Class<? extends Payload> [] payload() default {};
 
-    @RequiredArgsConstructor
-    class ValidFileExtensionValidator implements ConstraintValidator<ValidFileExtension, Part>
-    {
-        @Inject
-        DocumentValidationRuleRepo documentValidationRuleRepo;
 
-        @Override
-        public boolean isValid(Part file, ConstraintValidatorContext context)
-        {
-            if(file == null) return true;
-            if(file.getSubmittedFileName() == null || file.getSubmittedFileName().equals("")) return true;
-
-            // We can't validate the extension without knowing the document type
-            // This validator should be used at the class level with ValidFileExtensionValidatorOnDTO
-            return true;
-        }
-    }
 
     @RequiredArgsConstructor
     class ValidFileExtensionValidatorOnBase64Url implements ConstraintValidator<ValidFileExtension, String>
